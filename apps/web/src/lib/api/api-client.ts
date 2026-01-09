@@ -9,6 +9,7 @@ class ApiClient {
 
     constructor(baseUrl: string) {
         this.baseUrl = baseUrl;
+        console.log('[ApiClient] Initialized with Base URL:', baseUrl);
     }
 
     private async request<T>(

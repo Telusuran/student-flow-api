@@ -88,4 +88,15 @@ This guide walks you through deploying the **Student Flow** application for free
     *   `BETTER_AUTH_URL`: Ensure this matches the backend URL exactly.
 4.  **Redeploy** the Backend (Deployments -> Redeploy) to apply changes.
 
+---
+
+## Step 5: Share with the World 🌍
+Your Vercel deployment is **public by default**.
+
+1.  Go to your **Frontend Project** in Vercel.
+2.  Click the **Visit** button (top right) or copy the **Domains** link (e.g., `https://student-flow-web.vercel.app`).
+3.  **Send this link to anyone!** They can access your app immediately.
+
+> **Note on Accounts**: Since your database is live (Neon), anyone visiting the link will be using the **same production database**. If they create an account, it is a real account in your system.
+
 **Done! Your app is fully deployed on Vercel.**
