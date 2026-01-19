@@ -1,40 +1,37 @@
 import 'dotenv/config';
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
-import { toNodeHandler } from 'better-auth/node';
-import { auth } from '../src/config/auth.js';
-import routes from '../src/routes/index.js';
-import {
-    errorMiddleware,
-    notFoundHandler,
-} from '../src/middleware/error.middleware.js';
 import path from 'path';
 import fs from 'fs';
 
 const app = express();
 
-// Environment variable check endpoint for debugging
-app.get('/api/env-check', (req: Request, res: Response) => {
+// Diagnostic endpoint - no dependencies, always works
+app.get('/api/health', (req: Request, res: Response) => {
     res.json({
-        hasDbUrl: !!process.env.DATABASE_URL || !!process.env.POSTGRES_URL,
-        hasAuthSecret: !!process.env.BETTER_AUTH_SECRET,
-        hasFrontendUrl: !!process.env.FRONTEND_URL,
-        nodeEnv: process.env.NODE_ENV,
-        vercel: process.env.VERCEL,
+        status: 'ok',
+        message: 'Student Flow API is running',
+        env: {
+            hasDbUrl: !!(process.env.DATABASE_URL || process.env.POSTGRES_URL),
+            hasAuthSecret: !!process.env.BETTER_AUTH_SECRET,
+            hasFrontendUrl: !!process.env.FRONTEND_URL,
+            vercel: process.env.VERCEL,
+        }
     });
+});
+
+// Health check at root - also no dependencies
+app.get('/', (req: Request, res: Response) => {
+    res.json({ status: 'ok', message: 'Student Flow API is running' });
 });
 
 // CORS configuration - Allow all vercel.app domains
 app.use(
     cors({
         origin: (origin, callback) => {
-            // Allow requests with no origin (like mobile apps or curl requests)
             if (!origin) return callback(null, true);
-            // Allow localhost for development
             if (origin.includes('localhost')) return callback(null, true);
-            // Allow all vercel.app domains
             if (origin.endsWith('.vercel.app')) return callback(null, true);
-            // Allow configured frontend URL
             if (process.env.FRONTEND_URL && origin === process.env.FRONTEND_URL) return callback(null, true);
             console.warn('Blocked by CORS:', origin);
             return callback(null, false);
@@ -51,30 +48,90 @@ app.use(express.urlencoded({ extended: true }));
 
 // Serve uploads directory (note: won't persist on Vercel)
 const uploadDir = path.join(process.cwd(), 'uploads');
-if (!fs.existsSync(uploadDir)) {
-    try {
+try {
+    if (!fs.existsSync(uploadDir)) {
         fs.mkdirSync(uploadDir, { recursive: true });
-    } catch (e) {
-        // Ignore - Vercel is read-only
+    }
+    app.use('/uploads', express.static(uploadDir));
+} catch (e) {
+    // Ignore - Vercel is read-only
+}
+
+// Lazy load auth and routes to catch initialization errors
+let authHandler: any = null;
+let routes: any = null;
+let initError: Error | null = null;
+
+async function initializeApp() {
+    try {
+        const { toNodeHandler } = await import('better-auth/node');
+        const { auth } = await import('../src/config/auth.js');
+        const routesModule = await import('../src/routes/index.js');
+
+        authHandler = toNodeHandler(auth);
+        routes = routesModule.default;
+
+        return true;
+    } catch (error) {
+        initError = error as Error;
+        console.error('Failed to initialize app:', error);
+        return false;
     }
 }
-app.use('/uploads', express.static(uploadDir));
 
-// Better Auth handler
-app.all('/api/auth/*', toNodeHandler(auth));
+// Initialize on first request
+let initialized = false;
 
-// API routes
-app.use('/api', routes);
+app.use(async (req: Request, res: Response, next: NextFunction) => {
+    // Skip for health endpoints
+    if (req.path === '/' || req.path === '/api/health') {
+        return next();
+    }
 
-// Health check at root
-app.get('/', (req: Request, res: Response) => {
-    res.json({ status: 'ok', message: 'Student Flow API is running' });
+    if (!initialized) {
+        await initializeApp();
+        initialized = true;
+    }
+
+    if (initError) {
+        return res.status(500).json({
+            error: 'App initialization failed',
+            message: initError.message,
+            stack: process.env.NODE_ENV === 'development' ? initError.stack : undefined
+        });
+    }
+
+    next();
+});
+
+// Better Auth handler - lazy loaded
+app.all('/api/auth/*', async (req: Request, res: Response, next: NextFunction) => {
+    if (!authHandler) {
+        return res.status(500).json({ error: 'Auth not initialized' });
+    }
+    return authHandler(req, res, next);
+});
+
+// API routes - lazy loaded
+app.use('/api', (req: Request, res: Response, next: NextFunction) => {
+    if (!routes) {
+        return res.status(500).json({ error: 'Routes not initialized', initError: initError?.message });
+    }
+    return routes(req, res, next);
 });
 
 // 404 handler
-app.use(notFoundHandler);
+app.use((req: Request, res: Response) => {
+    res.status(404).json({ error: 'Route not found', path: req.path });
+});
 
 // Error handler
-app.use(errorMiddleware);
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    console.error('Error:', err);
+    res.status(500).json({
+        error: 'Internal server error',
+        message: err.message,
+    });
+});
 
 export default app;
