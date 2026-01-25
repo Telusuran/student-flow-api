@@ -9,10 +9,10 @@
     "projectName": "student-flow-monorepo",
     "projectPath": "d:\\student-flow-monorepo",
     "testIds": [],
-    "additionalInstruction": "Run all generated tests to verify the fix.",
+    "additionalInstruction": "",
     "envs": {
       "API_KEY": "sk-user-3hrX0JahJGYlSGg8DieXkQq6OGN49XiHgQba6C69bqzVtDArD8o7CuiK_aDU5YyIeBC3lK14jcq84L3Tw3g4YJtY8vzwY65md52RXJuI0tDDEHNtHvBtGW5VHujWsC3LcfI"
     }
   },
-  "proxy": "http://25e42731-36ca-4cba-96f8-03f79c738bae:z95VBy1w1wZRryJfRk4NO6zZHnwFNkSV@tun.testsprite.com:8080"
+  "proxy": "http://5034ec76-6f91-49c8-b3be-a6b1862e0332:LAUnbAuD2skMOxNRbJnOu2m9ZtH5IyCe@tun.testsprite.com:8080"
 }

@@ -30,7 +30,7 @@ app.use(
     cors({
         origin: (origin, callback) => {
             if (!origin) return callback(null, true);
-            if (origin.includes('localhost')) return callback(null, true);
+            if (origin.includes('localhost') || origin.includes('127.0.0.1')) return callback(null, true);
             if (origin.endsWith('.vercel.app')) return callback(null, true);
             if (process.env.FRONTEND_URL && origin === process.env.FRONTEND_URL) return callback(null, true);
             console.warn('Blocked by CORS:', origin);
