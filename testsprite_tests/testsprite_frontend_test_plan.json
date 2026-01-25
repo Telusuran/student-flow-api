@@ -1,0 +1,590 @@
+[
+  {
+    "id": "TC001",
+    "title": "User Registration Success",
+    "description": "Verify that a new user can register successfully with valid information.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to the registration page."
+      },
+      {
+        "type": "action",
+        "description": "Enter valid user details including username, email, and password."
+      },
+      {
+        "type": "action",
+        "description": "Submit the registration form."
+      },
+      {
+        "type": "assertion",
+        "description": "Check that registration is successful and user is redirected to the dashboard."
+      }
+    ]
+  },
+  {
+    "id": "TC002",
+    "title": "User Registration with Missing Fields",
+    "description": "Verify that registration fails when required fields are missing.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to the registration page."
+      },
+      {
+        "type": "action",
+        "description": "Leave one or more required fields empty."
+      },
+      {
+        "type": "action",
+        "description": "Submit the registration form."
+      },
+      {
+        "type": "assertion",
+        "description": "Check that error messages appear for missing fields and registration is prevented."
+      }
+    ]
+  },
+  {
+    "id": "TC003",
+    "title": "Login Success",
+    "description": "Verify that a registered user can login successfully with valid credentials.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to the login page."
+      },
+      {
+        "type": "action",
+        "description": "Enter valid username/email and password."
+      },
+      {
+        "type": "action",
+        "description": "Click the login button."
+      },
+      {
+        "type": "assertion",
+        "description": "Check that login is successful and dashboard is loaded."
+      }
+    ]
+  },
+  {
+    "id": "TC004",
+    "title": "Login Failure with Invalid Credentials",
+    "description": "Verify that login fails when incorrect username/email or password is used.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to the login page."
+      },
+      {
+        "type": "action",
+        "description": "Enter invalid username/email or password."
+      },
+      {
+        "type": "action",
+        "description": "Click the login button."
+      },
+      {
+        "type": "assertion",
+        "description": "Check that appropriate error message is displayed and login is denied."
+      }
+    ]
+  },
+  {
+    "id": "TC005",
+    "title": "Password Recovery Workflow",
+    "description": "Verify the password recovery process works correctly with valid email.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to the password recovery page."
+      },
+      {
+        "type": "action",
+        "description": "Enter registered email address."
+      },
+      {
+        "type": "action",
+        "description": "Submit the password recovery request."
+      },
+      {
+        "type": "assertion",
+        "description": "Check for confirmation that recovery email was sent."
+      },
+      {
+        "type": "action",
+        "description": "Follow password reset link and set a new password."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify that the new password is accepted and user can login with it."
+      }
+    ]
+  },
+  {
+    "id": "TC006",
+    "title": "Multi-step Project Creation Wizard Completion",
+    "description": "Verify that a user can complete the full multi-step project creation wizard including AI task suggestions.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "From the dashboard, initiate new project creation."
+      },
+      {
+        "type": "action",
+        "description": "Fill in project details in the initial step."
+      },
+      {
+        "type": "action",
+        "description": "Proceed to timeline setup and review AI suggested tasks and milestones."
+      },
+      {
+        "type": "action",
+        "description": "Accept or modify AI suggested tasks."
+      },
+      {
+        "type": "action",
+        "description": "Complete final review and submit to create project."
+      },
+      {
+        "type": "assertion",
+        "description": "Check that the project is created and visible in active projects list."
+      }
+    ]
+  },
+  {
+    "id": "TC007",
+    "title": "Project Creation Wizard Handling AI Task Suggestion Rejections",
+    "description": "Verify user can reject or modify AI suggestions during project setup and continue successfully.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to project creation wizard."
+      },
+      {
+        "type": "action",
+        "description": "View AI suggested tasks and milestones."
+      },
+      {
+        "type": "action",
+        "description": "Reject or modify suggested tasks."
+      },
+      {
+        "type": "action",
+        "description": "Complete remaining steps and submit project."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify that project is created with user-modified or no AI suggested tasks."
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "Kanban Board Task CRUD Operations",
+    "description": "Verify task creation, reading, updating, and deletion functionality on the Kanban board.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Access the Kanban board for a project."
+      },
+      {
+        "type": "action",
+        "description": "Create a new task with valid information."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm the new task appears in the appropriate status column."
+      },
+      {
+        "type": "action",
+        "description": "Edit the task details."
+      },
+      {
+        "type": "assertion",
+        "description": "Check that changes are saved and displayed correctly."
+      },
+      {
+        "type": "action",
+        "description": "Delete the task."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm the task is removed from the board."
+      }
+    ]
+  },
+  {
+    "id": "TC009",
+    "title": "Kanban Board Drag-and-Drop Task Reordering and Status Update",
+    "description": "Verify tasks can be reordered via drag-and-drop within and across status columns updating their statuses accordingly.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to project Kanban board."
+      },
+      {
+        "type": "action",
+        "description": "Drag a task to a different position within the same status column."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify task order updates visually and persists."
+      },
+      {
+        "type": "action",
+        "description": "Drag the same task to a different status column."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm the task status is updated and reflected correctly."
+      }
+    ]
+  },
+  {
+    "id": "TC010",
+    "title": "AI Document Analysis and Task Generation Accuracy",
+    "description": "Verify the AI document analysis functionality correctly extracts key points and generates meaningful tasks.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to document analysis page."
+      },
+      {
+        "type": "action",
+        "description": "Upload a valid academic document."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify AI extracts relevant key points from the document."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify AI generates meaningful and contextually accurate project task suggestions."
+      },
+      {
+        "type": "action",
+        "description": "Accept or modify the generated tasks."
+      },
+      {
+        "type": "assertion",
+        "description": "Check that tasks can be saved and integrated into project task list."
+      }
+    ]
+  },
+  {
+    "id": "TC011",
+    "title": "Project Calendar Task Display and Interaction",
+    "description": "Verify calendar displays tasks and deadlines correctly with color coding and supports quick task addition and edits.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Open the project calendar page."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify all relevant project tasks and deadlines are displayed with appropriate color coding."
+      },
+      {
+        "type": "action",
+        "description": "Add a new task directly on a calendar date."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm the new task appears in calendar and project task list."
+      },
+      {
+        "type": "action",
+        "description": "Reschedule an existing task by dragging it to a different date on the calendar."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify task deadline updates and calendar view reflects the change."
+      },
+      {
+        "type": "action",
+        "description": "Edit task details from calendar interface."
+      },
+      {
+        "type": "assertion",
+        "description": "Check that edits persist and display correctly in calendar and task details page."
+      }
+    ]
+  },
+  {
+    "id": "TC012",
+    "title": "Resource Linking and Retrieval without File Upload",
+    "description": "Verify users can add and manage linked resources (links or references) within projects and retrieve them effectively.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to resource management page for a project."
+      },
+      {
+        "type": "action",
+        "description": "Add a new linked resource with a valid URL and description."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify linked resource is saved and appears in the resource list."
+      },
+      {
+        "type": "action",
+        "description": "Edit details of an existing linked resource."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm changes are reflected correctly."
+      },
+      {
+        "type": "action",
+        "description": "Remove a linked resource."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify it is removed from the resource list."
+      }
+    ]
+  },
+  {
+    "id": "TC013",
+    "title": "Project Messaging Real-time Collaboration and Mentions",
+    "description": "Verify that real-time messaging operates correctly with message sending, receiving, and mention notifications.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to project messaging page."
+      },
+      {
+        "type": "action",
+        "description": "Send a new message within a project conversation."
+      },
+      {
+        "type": "assertion",
+        "description": "Check message appears immediately in the conversation."
+      },
+      {
+        "type": "action",
+        "description": "Mention a user by using '@' and selecting the username."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the mentioned user receives a notification and mention highlight in message."
+      },
+      {
+        "type": "action",
+        "description": "Receive a message from another user and verify it appears in real-time."
+      }
+    ]
+  },
+  {
+    "id": "TC014",
+    "title": "Notification Delivery with User Preferences Respected",
+    "description": "Verify notifications are delivered timely and user notification preferences are honored.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to notification settings page."
+      },
+      {
+        "type": "action",
+        "description": "Adjust notification preferences (e.g., email alerts, in-app alerts)."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm changes save successfully."
+      },
+      {
+        "type": "action",
+        "description": "Trigger a notification event (e.g., new project sharing or task assignment)."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify notification is delivered or withheld according to user preferences."
+      }
+    ]
+  },
+  {
+    "id": "TC015",
+    "title": "Data Insights Accuracy and Visualization",
+    "description": "Verify data insights page accurately reflects project progress and productivity metrics with clear visualizations.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to data insights page."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify displayed progress metrics match project data."
+      },
+      {
+        "type": "assertion",
+        "description": "Check visual charts and analytics accurately represent productivity and deadlines."
+      },
+      {
+        "type": "action",
+        "description": "Update task statuses and verify the insights update accordingly."
+      }
+    ]
+  },
+  {
+    "id": "TC016",
+    "title": "User Profile Editing and Account Settings Update",
+    "description": "Verify users can edit their profile and update account settings successfully.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to edit profile page."
+      },
+      {
+        "type": "action",
+        "description": "Modify user profile details such as display name, contact information."
+      },
+      {
+        "type": "action",
+        "description": "Save changes."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify updated profile details are saved and displayed correctly."
+      },
+      {
+        "type": "action",
+        "description": "Navigate to account settings page."
+      },
+      {
+        "type": "action",
+        "description": "Change user preferences or settings."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm that settings changes persist without errors."
+      }
+    ]
+  },
+  {
+    "id": "TC017",
+    "title": "Project Archiving and Restoration",
+    "description": "Verify that projects can be archived and restored properly without data loss.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Select an active project and archive it."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm project moves to archived projects list and is no longer active."
+      },
+      {
+        "type": "action",
+        "description": "Restore the archived project."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify project returns to active project list with all data intact."
+      }
+    ]
+  },
+  {
+    "id": "TC018",
+    "title": "Performance: Dashboard Load Time Under 2 Seconds",
+    "description": "Verify that the main dashboard loads fully within 2 seconds under standard network conditions.",
+    "category": "performance",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to the dashboard page with several active projects and deadlines."
+      },
+      {
+        "type": "assertion",
+        "description": "Measure and confirm page load time is under 2 seconds."
+      }
+    ]
+  },
+  {
+    "id": "TC019",
+    "title": "Performance: API Response Time Under 500ms for Project Tasks",
+    "description": "Verify that API responses for project task retrieval and updates respond in under 500ms.",
+    "category": "performance",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Request task list from backend via API."
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm API response time is less than 500 milliseconds."
+      },
+      {
+        "type": "action",
+        "description": "Submit task update requests (e.g., status change)."
+      },
+      {
+        "type": "assertion",
+        "description": "Ensure response times remain under 500 milliseconds."
+      }
+    ]
+  },
+  {
+    "id": "TC020",
+    "title": "Error Handling: Invalid Project Creation Input",
+    "description": "Verify appropriate error messages and prevention of project creation when invalid or incomplete data is entered.",
+    "category": "error handling",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Start a new project creation wizard."
+      },
+      {
+        "type": "action",
+        "description": "Leave required fields empty or enter invalid data (e.g., invalid date ranges)."
+      },
+      {
+        "type": "action",
+        "description": "Attempt to proceed or submit the project."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify error messages are displayed and project creation is blocked until valid data is provided."
+      }
+    ]
+  }
+]

@@ -22,6 +22,7 @@ Thumbs.db
 # Logs
 *.log
 npm-debug.log*
+testsprite_*.txt
 
 # Uploads (local development only)
 uploads/

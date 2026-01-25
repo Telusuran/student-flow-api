@@ -6,6 +6,11 @@ import messagingRoutes from './messaging.routes.js';
 
 const router = Router();
 
+// Health check
+router.get('/health', (req, res) => {
+    res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 // Mount routes
 router.use('/projects', projectsRoutes);
 router.use('/', tasksRoutes); // Tasks have mixed paths
@@ -18,9 +23,6 @@ router.use('/notifications', notificationsRoutes);
 import resourcesRoutes from './resources.routes.js';
 router.use('/', resourcesRoutes); // Resources routes have specific paths like /projects/:id/resources and /resources
 
-// Health check
-router.get('/health', (req, res) => {
-    res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
+
 
 export default router;

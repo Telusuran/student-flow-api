@@ -1,0 +1,133 @@
+{
+    "tech_stack": [
+        "TypeScript",
+        "React 19",
+        "Vite",
+        "Express.js",
+        "PostgreSQL",
+        "Drizzle ORM",
+        "Better Auth",
+        "TanStack Query",
+        "Tailwind CSS",
+        "Google Gemini AI",
+        "Groq AI"
+    ],
+    "features": [
+        {
+            "name": "Authentication",
+            "description": "User authentication system with login, register, password reset, and profile management using Better Auth",
+            "files": [
+                "apps/web/src/pages/LoginPage.tsx",
+                "apps/web/src/pages/RegisterPage.tsx",
+                "apps/web/src/pages/ForgotPasswordPage.tsx",
+                "apps/web/src/pages/ResetPasswordPage.tsx",
+                "apps/web/src/pages/ProfileSetupPage.tsx",
+                "apps/api/src/config/auth.ts"
+            ]
+        },
+        {
+            "name": "Dashboard",
+            "description": "Main dashboard page showing active projects, semester progress, upcoming deadlines, and quick actions",
+            "files": [
+                "apps/web/src/pages/DashboardPage.tsx",
+                "apps/web/src/components/DashboardHeader.tsx",
+                "apps/web/src/components/ActiveProjects.tsx",
+                "apps/web/src/components/SemesterProgress.tsx",
+                "apps/web/src/components/UpcomingDeadlines.tsx",
+                "apps/web/src/components/QuickActions.tsx"
+            ]
+        },
+        {
+            "name": "Project Management",
+            "description": "Full project CRUD operations including creation, editing, archiving, deletion, and restoration",
+            "files": [
+                "apps/web/src/pages/ProjectPage.tsx",
+                "apps/web/src/pages/ProjectSpacePage.tsx",
+                "apps/web/src/pages/CreateProjectPage.tsx",
+                "apps/web/src/pages/CreateProjectTimelinePage.tsx",
+                "apps/web/src/pages/CreateProjectReviewPage.tsx",
+                "apps/web/src/pages/ProjectSettingsPage.tsx",
+                "apps/web/src/pages/DeleteProjectPage.tsx",
+                "apps/web/src/pages/ArchivedProjectsPage.tsx",
+                "apps/web/src/pages/RestoreProjectPage.tsx",
+                "apps/api/src/routes/projects.routes.ts",
+                "apps/api/src/services/projects.service.ts"
+            ]
+        },
+        {
+            "name": "Task Management",
+            "description": "Kanban board with drag-and-drop, task creation, editing, status updates, and detailed task views",
+            "files": [
+                "apps/web/src/components/KanbanBoard.tsx",
+                "apps/web/src/components/kanban/",
+                "apps/web/src/pages/TaskDetailsPage.tsx",
+                "apps/web/src/hooks/useTasks.ts",
+                "apps/api/src/routes/tasks.routes.ts",
+                "apps/api/src/services/tasks.service.ts"
+            ]
+        },
+        {
+            "name": "Project Calendar",
+            "description": "Calendar view for project deadlines and task scheduling",
+            "files": [
+                "apps/web/src/pages/ProjectCalendarPage.tsx"
+            ]
+        },
+        {
+            "name": "AI Features",
+            "description": "AI-powered task suggestions, document analysis, and data insights using Groq and Gemini AI",
+            "files": [
+                "apps/web/src/pages/DocumentAnalyzerPage.tsx",
+                "apps/web/src/pages/DataInsightPage.tsx",
+                "apps/web/src/hooks/useAI.ts",
+                "apps/api/src/routes/ai.routes.ts",
+                "apps/api/src/services/ai.service.ts"
+            ]
+        },
+        {
+            "name": "Resource Management",
+            "description": "File upload and linked resources management for projects",
+            "files": [
+                "apps/web/src/pages/ResourceManagementPage.tsx",
+                "apps/web/src/pages/AddLinkedFilePage.tsx",
+                "apps/web/src/hooks/useResources.ts",
+                "apps/api/src/routes/resources.routes.ts",
+                "apps/api/src/services/resources.service.ts"
+            ]
+        },
+        {
+            "name": "Messaging",
+            "description": "Project-based messaging and collaboration system",
+            "files": [
+                "apps/web/src/pages/ProjectMessagingPage.tsx",
+                "apps/web/src/hooks/useMessaging.ts",
+                "apps/api/src/routes/messaging.routes.ts",
+                "apps/api/src/services/messaging.service.ts"
+            ]
+        },
+        {
+            "name": "Notifications",
+            "description": "User notifications system with settings management",
+            "files": [
+                "apps/web/src/pages/NotificationsPage.tsx",
+                "apps/web/src/pages/NotificationSettingsPage.tsx",
+                "apps/web/src/hooks/useNotifications.ts",
+                "apps/api/src/routes/notifications.routes.ts",
+                "apps/api/src/services/notifications.service.ts"
+            ]
+        },
+        {
+            "name": "User Management",
+            "description": "User profile editing, account settings, and account deletion",
+            "files": [
+                "apps/web/src/pages/AccountSettingsPage.tsx",
+                "apps/web/src/pages/EditProfilePage.tsx",
+                "apps/web/src/pages/DeleteAccountPage.tsx",
+                "apps/web/src/hooks/useCurrentUser.ts",
+                "apps/web/src/hooks/useUsers.ts",
+                "apps/api/src/routes/users.routes.ts",
+                "apps/api/src/services/users.service.ts"
+            ]
+        }
+    ]
+}

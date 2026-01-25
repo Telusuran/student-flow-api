@@ -12,6 +12,15 @@ dist
 dist-ssr
 *.local
 
+# Key/Cert files
+*.pem
+*.key
+*.crt
+
+# Test reports
+playwright-report/
+test-results/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

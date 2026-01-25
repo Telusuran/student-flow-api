@@ -195,6 +195,11 @@ Respond with JSON array: [{ "title": string, "description": string, "priority": 
             const text = await generateAICompletion({ prompt, maxTokens: 1024 });
             const suggestions = JSON.parse(text);
 
+            if (!Array.isArray(suggestions)) {
+                console.warn('AI suggestions response is not an array:', text);
+                return [];
+            }
+
             // Store suggestions
             for (const suggestion of suggestions) {
                 await this.database.insert(aiSuggestions).values({

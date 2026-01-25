@@ -157,7 +157,10 @@ export const DashboardPage: React.FC = () => {
             return (
                 <div className="p-4 text-center text-text-muted">
                     <span className="material-symbols-outlined text-4xl mb-2 block text-slate-400">folder_off</span>
-                    <p>No projects yet. Create your first project!</p>
+                    <p>No projects yet.</p>
+                    <Link to="/create-project" className="text-dynamic-cta hover:text-yellow-600 font-bold underline mt-2 inline-block">
+                        Create your first project!
+                    </Link>
                 </div>
             );
         }
@@ -252,7 +255,10 @@ export const DashboardPage: React.FC = () => {
                     <div className="flex flex-col bg-neutral-card rounded-2xl border border-white shadow-soft overflow-hidden h-full card-hoverable lg:col-span-2 xl:col-span-1">
                         <div className="flex items-center justify-between px-6 py-5 border-b border-accent-nav/10 bg-white/30 backdrop-blur-sm">
                             <h2 className="text-slate-800 text-lg font-bold tracking-tight">Active Projects</h2>
-                            <Link to="/project" className="text-sm font-semibold text-dynamic-cta hover:text-yellow-600 transition-colors">View All</Link>
+                            <div className="flex gap-3">
+                                <Link to="/create-project" className="text-sm font-semibold text-dynamic-cta hover:text-yellow-600 transition-colors">+ New Project</Link>
+                                <Link to="/project" className="text-sm font-semibold text-text-muted hover:text-slate-800 transition-colors">View All</Link>
+                            </div>
                         </div>
                         <div className="flex flex-col p-2 gap-2">
                             {renderProjects()}

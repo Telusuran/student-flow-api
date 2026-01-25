@@ -1,0 +1,177 @@
+{
+  "meta": {
+    "project": "Student Flow PM",
+    "date": "2026-01-21",
+    "prepared_by": "Khafidh (Development Team)"
+  },
+  "product_overview": "Student Flow PM is a next-generation project management platform tailored specifically for students. It offers AI-powered assistance, context-aware management, and data-driven insights designed to streamline academic project workflows, eliminate administrative burdens, and enhance productivity.",
+  "core_goals": [
+    "Eliminate friction through AI-assisted project setup and task generation",
+    "Provide context-aware management with academic context understanding",
+    "Deliver data-driven insights with automated analytics and visual progress tracking",
+    "Design an intuitive user experience optimized for student needs"
+  ],
+  "key_features": [
+    "User authentication with registration, login, password recovery, and profile management",
+    "Multi-step project creation wizard with AI task and timeline suggestions",
+    "Comprehensive project dashboard showing progress, active projects, and quick actions",
+    "Kanban-style task management with drag-and-drop, status updates, and detailed views",
+    "AI-powered features including smart task generation, document analysis, and progress insights",
+    "Project calendar with multi-project views and deadline management",
+    "Resource management with file uploads, link management, and organization",
+    "Real-time project messaging and collaboration with file sharing and mentions",
+    "User notifications system with customizable settings and activity feed",
+    "Data insights and analytics presenting project and personal productivity metrics",
+    "Collaborative project spaces for team projects with shared resources and communication"
+  ],
+  "user_flow_summary": [
+    "Creating a new project: from dashboard initiation to AI-powered task and milestone suggestions and final project creation",
+    "AI document analysis flow enabling users to upload academic documents to extract key points and auto-generate project tasks",
+    "Calendar task management allowing users to view, add, reschedule, and edit tasks within a visual calendar interface"
+  ],
+  "validation_criteria": [
+    "User registration, login, and password recovery workflows function securely and reliably",
+    "Project creation wizard completes multi-step project setup with AI suggestions accepted by users",
+    "Kanban board supports task CRUD, drag-and-drop reordering, and status updates without errors",
+    "AI features accurately analyze documents and generate meaningful task suggestions",
+    "Calendar displays all relevant tasks and deadlines with color coding and supports quick task additions",
+    "Resource uploads and linking features store and retrieve project files efficiently",
+    "Messaging system enables real-time collaboration with thread and mention support",
+    "Notifications deliver timely alerts with user preferences respected",
+    "Data insights reflect accurate progress and productivity metrics",
+    "Application meets performance standards including <2 second dashboard load time and <500ms API response"
+  ],
+  "code_summary": {
+    "tech_stack": [
+      "TypeScript",
+      "React 19",
+      "Vite",
+      "Express.js",
+      "PostgreSQL",
+      "Drizzle ORM",
+      "Better Auth",
+      "TanStack Query",
+      "Tailwind CSS",
+      "Google Gemini AI",
+      "Groq AI"
+    ],
+    "features": [
+      {
+        "name": "Authentication",
+        "description": "User authentication system with login, register, password reset, and profile management using Better Auth",
+        "files": [
+          "apps/web/src/pages/LoginPage.tsx",
+          "apps/web/src/pages/RegisterPage.tsx",
+          "apps/web/src/pages/ForgotPasswordPage.tsx",
+          "apps/web/src/pages/ResetPasswordPage.tsx",
+          "apps/web/src/pages/ProfileSetupPage.tsx",
+          "apps/api/src/config/auth.ts"
+        ]
+      },
+      {
+        "name": "Dashboard",
+        "description": "Main dashboard page showing active projects, semester progress, upcoming deadlines, and quick actions",
+        "files": [
+          "apps/web/src/pages/DashboardPage.tsx",
+          "apps/web/src/components/DashboardHeader.tsx",
+          "apps/web/src/components/ActiveProjects.tsx",
+          "apps/web/src/components/SemesterProgress.tsx",
+          "apps/web/src/components/UpcomingDeadlines.tsx",
+          "apps/web/src/components/QuickActions.tsx"
+        ]
+      },
+      {
+        "name": "Project Management",
+        "description": "Full project CRUD operations including creation, editing, archiving, deletion, and restoration",
+        "files": [
+          "apps/web/src/pages/ProjectPage.tsx",
+          "apps/web/src/pages/ProjectSpacePage.tsx",
+          "apps/web/src/pages/CreateProjectPage.tsx",
+          "apps/web/src/pages/CreateProjectTimelinePage.tsx",
+          "apps/web/src/pages/CreateProjectReviewPage.tsx",
+          "apps/web/src/pages/ProjectSettingsPage.tsx",
+          "apps/web/src/pages/DeleteProjectPage.tsx",
+          "apps/web/src/pages/ArchivedProjectsPage.tsx",
+          "apps/web/src/pages/RestoreProjectPage.tsx",
+          "apps/api/src/routes/projects.routes.ts",
+          "apps/api/src/services/projects.service.ts"
+        ]
+      },
+      {
+        "name": "Task Management",
+        "description": "Kanban board with drag-and-drop, task creation, editing, status updates, and detailed task views",
+        "files": [
+          "apps/web/src/components/KanbanBoard.tsx",
+          "apps/web/src/components/kanban/",
+          "apps/web/src/pages/TaskDetailsPage.tsx",
+          "apps/web/src/hooks/useTasks.ts",
+          "apps/api/src/routes/tasks.routes.ts",
+          "apps/api/src/services/tasks.service.ts"
+        ]
+      },
+      {
+        "name": "Project Calendar",
+        "description": "Calendar view for project deadlines and task scheduling",
+        "files": [
+          "apps/web/src/pages/ProjectCalendarPage.tsx"
+        ]
+      },
+      {
+        "name": "AI Features",
+        "description": "AI-powered task suggestions, document analysis, and data insights using Groq and Gemini AI",
+        "files": [
+          "apps/web/src/pages/DocumentAnalyzerPage.tsx",
+          "apps/web/src/pages/DataInsightPage.tsx",
+          "apps/web/src/hooks/useAI.ts",
+          "apps/api/src/routes/ai.routes.ts",
+          "apps/api/src/services/ai.service.ts"
+        ]
+      },
+      {
+        "name": "Resource Management",
+        "description": "File upload and linked resources management for projects",
+        "files": [
+          "apps/web/src/pages/ResourceManagementPage.tsx",
+          "apps/web/src/pages/AddLinkedFilePage.tsx",
+          "apps/web/src/hooks/useResources.ts",
+          "apps/api/src/routes/resources.routes.ts",
+          "apps/api/src/services/resources.service.ts"
+        ]
+      },
+      {
+        "name": "Messaging",
+        "description": "Project-based messaging and collaboration system",
+        "files": [
+          "apps/web/src/pages/ProjectMessagingPage.tsx",
+          "apps/web/src/hooks/useMessaging.ts",
+          "apps/api/src/routes/messaging.routes.ts",
+          "apps/api/src/services/messaging.service.ts"
+        ]
+      },
+      {
+        "name": "Notifications",
+        "description": "User notifications system with settings management",
+        "files": [
+          "apps/web/src/pages/NotificationsPage.tsx",
+          "apps/web/src/pages/NotificationSettingsPage.tsx",
+          "apps/web/src/hooks/useNotifications.ts",
+          "apps/api/src/routes/notifications.routes.ts",
+          "apps/api/src/services/notifications.service.ts"
+        ]
+      },
+      {
+        "name": "User Management",
+        "description": "User profile editing, account settings, and account deletion",
+        "files": [
+          "apps/web/src/pages/AccountSettingsPage.tsx",
+          "apps/web/src/pages/EditProfilePage.tsx",
+          "apps/web/src/pages/DeleteAccountPage.tsx",
+          "apps/web/src/hooks/useCurrentUser.ts",
+          "apps/web/src/hooks/useUsers.ts",
+          "apps/api/src/routes/users.routes.ts",
+          "apps/api/src/services/users.service.ts"
+        ]
+      }
+    ]
+  }
+}
