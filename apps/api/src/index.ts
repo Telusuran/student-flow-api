@@ -55,10 +55,13 @@ app.use('/uploads', express.static(uploadDir));
 // This handles /api/auth/* routes automatically
 app.all('/api/auth/*', toNodeHandler(auth));
 
-// API routes
-app.use('/api', routes);
+// Debug routes (must be before main /api routes to avoid auth middleware capture)
 import debugRoutes from './routes/debug.routes.js';
 app.use('/api/debug', debugRoutes);
+
+// API routes
+app.use('/api', routes);
+
 
 // 404 handler
 app.use(notFoundHandler);
