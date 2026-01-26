@@ -1,6 +1,6 @@
 import { pgTable, text, timestamp, integer } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
-import { user } from './auth.schema';
+import { user } from './auth.schema.js';
 
 export const projects = pgTable('projects', {
     id: text('id')
