@@ -60,6 +60,7 @@ try {
 // Lazy load auth and routes to catch initialization errors
 let authHandler: any = null;
 let routes: any = null;
+let debugHandler: any = null;
 let initError: Error | null = null;
 
 async function initializeApp() {
@@ -67,9 +68,11 @@ async function initializeApp() {
         const { toNodeHandler } = await import('better-auth/node');
         const { auth } = await import('../src/config/auth.js');
         const routesModule = await import('../src/routes/index.js');
+        const debugModule = await import('../src/routes/debug.routes.js');
 
         authHandler = toNodeHandler(auth);
         routes = routesModule.default;
+        debugHandler = debugModule.default;
 
         return true;
     } catch (error) {
@@ -110,6 +113,14 @@ app.all('/api/auth/*', async (req: Request, res: Response, next: NextFunction) =
         return res.status(500).json({ error: 'Auth not initialized' });
     }
     return authHandler(req, res, next);
+});
+
+// Debug routes - lazy loaded (Added before API routes)
+app.use('/api/debug', (req: Request, res: Response, next: NextFunction) => {
+    if (!debugHandler) {
+        return res.status(500).json({ error: 'Debug handler not initialized' });
+    }
+    return debugHandler(req, res, next);
 });
 
 // API routes - lazy loaded
