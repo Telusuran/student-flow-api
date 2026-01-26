@@ -51,6 +51,7 @@ export const ProjectPage: React.FC = () => {
     const [newTaskDueDate, setNewTaskDueDate] = useState('');
     const [addingToColumn, setAddingToColumn] = useState<string | null>(null);
     const [activeDragTask, setActiveDragTask] = useState<Task | null>(null);
+    const [mobileAIDrawerOpen, setMobileAIDrawerOpen] = useState(false);
 
     const { data: projects } = useProjects();
 
@@ -514,6 +515,123 @@ export const ProjectPage: React.FC = () => {
                         </DndContext>
                     )}
                 </main>
+
+                {/* Mobile AI Suggestions Drawer */}
+                {!isFocusMode && (selectedProjectId || isAllProjectsMode) && (
+                    <>
+                        {/* Floating Action Button - Mobile Only */}
+                        <button
+                            onClick={() => setMobileAIDrawerOpen(true)}
+                            className="lg:hidden fixed bottom-6 right-6 z-50 flex items-center justify-center size-14 rounded-full bg-gradient-to-br from-purple-600 to-purple-700 text-white shadow-lg hover:shadow-xl transition-all hover:scale-105 active:scale-95"
+                            title="AI Suggestions"
+                        >
+                            <span className="material-symbols-outlined text-[28px]">auto_awesome</span>
+                        </button>
+
+                        {/* Mobile Drawer */}
+                        <div
+                            className={`lg:hidden fixed inset-0 z-50 transition-all duration-300 ${mobileAIDrawerOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}
+                        >
+                            {/* Backdrop */}
+                            <div
+                                className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ${mobileAIDrawerOpen ? 'opacity-100' : 'opacity-0'}`}
+                                onClick={() => setMobileAIDrawerOpen(false)}
+                            />
+
+                            {/* Drawer Content */}
+                            <div
+                                className={`absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl transition-transform duration-300 max-h-[80vh] flex flex-col ${mobileAIDrawerOpen ? 'translate-y-0' : 'translate-y-full'}`}
+                            >
+                                {/* Drawer Header */}
+                                <div className="flex-none p-4 border-b border-gray-200">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <div className="flex items-center gap-2">
+                                            <span className="material-symbols-outlined text-purple-500">auto_awesome</span>
+                                            <h3 className="text-lg font-bold text-text-main">AI Suggestions</h3>
+                                        </div>
+                                        <button
+                                            onClick={() => setMobileAIDrawerOpen(false)}
+                                            className="flex items-center justify-center size-8 rounded-full hover:bg-gray-100 transition-colors"
+                                        >
+                                            <span className="material-symbols-outlined text-gray-500">close</span>
+                                        </button>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            onClick={handleGenerateSuggestions}
+                                            disabled={generateSuggestionsMutation.isPending}
+                                            className="flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-bold bg-purple-600 text-white hover:bg-purple-700 transition-all disabled:opacity-50 flex-1"
+                                        >
+                                            {generateSuggestionsMutation.isPending ? (
+                                                <span className="material-symbols-outlined text-base animate-spin">refresh</span>
+                                            ) : (
+                                                <span className="material-symbols-outlined text-base">bolt</span>
+                                            )}
+                                            {generateSuggestionsMutation.isPending ? 'Generating...' : 'Generate Suggestions'}
+                                        </button>
+                                    </div>
+                                    <p className="text-xs text-text-muted mt-2">
+                                        {isAllProjectsMode ? 'Global insights & suggestions' : 'Click to add suggestions as tasks'}
+                                    </p>
+                                </div>
+
+                                {/* Drawer Content - Scrollable */}
+                                <div className="flex-1 overflow-y-auto p-4">
+                                    <div className="flex flex-col gap-3">
+                                        {displaySuggestions?.length ? displaySuggestions.map((suggestion: { title: string; description: string; priority: string; reasoning?: string; dueDate?: string }, i: number) => (
+                                            <div
+                                                key={i}
+                                                className="p-4 rounded-xl border border-purple-200 bg-purple-50 hover:border-purple-400 hover:shadow-md transition-all"
+                                            >
+                                                <div className="flex items-start justify-between gap-2 mb-2">
+                                                    <p className="text-sm font-bold text-text-main flex-1">{suggestion.title}</p>
+                                                    <span className={`text-[10px] font-bold px-2 py-1 rounded whitespace-nowrap ${suggestion.priority === 'high' ? 'bg-red-100 text-red-600' :
+                                                            suggestion.priority === 'medium' ? 'bg-orange-100 text-orange-600' :
+                                                                'bg-blue-100 text-blue-600'
+                                                        }`}>
+                                                        {suggestion.priority}
+                                                    </span>
+                                                </div>
+                                                <p className="text-xs text-text-muted mb-3">{suggestion.description}</p>
+                                                {suggestion.dueDate && (
+                                                    <div className="flex items-center gap-1 mb-2">
+                                                        <span className="material-symbols-outlined text-xs text-gray-500">calendar_today</span>
+                                                        <span className="text-[10px] text-gray-500">
+                                                            {new Date(suggestion.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                                {suggestion.reasoning && (
+                                                    <div className="mb-3 pt-2 border-t border-purple-200">
+                                                        <p className="text-[10px] text-purple-600 font-medium flex items-center gap-1">
+                                                            <span className="material-symbols-outlined text-xs">lightbulb</span>
+                                                            Why: {suggestion.reasoning}
+                                                        </p>
+                                                    </div>
+                                                )}
+                                                {!isAllProjectsMode && (
+                                                    <button
+                                                        onClick={() => handleCreateFromSuggestion(suggestion)}
+                                                        disabled={createTask.isPending}
+                                                        className="w-full flex items-center justify-center gap-1 text-sm font-bold px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-all disabled:opacity-50"
+                                                    >
+                                                        <span className="material-symbols-outlined text-base">add</span>
+                                                        {createTask.isPending ? 'Adding...' : 'Add as Task'}
+                                                    </button>
+                                                )}
+                                            </div>
+                                        )) : (
+                                            <div className="text-center py-12">
+                                                <span className="material-symbols-outlined text-5xl text-purple-200 mb-3 block">psychology</span>
+                                                <p className="text-sm text-text-muted">Click "Generate" to get AI suggestions</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </>
+                )}
             </div>
         </div>
     );
