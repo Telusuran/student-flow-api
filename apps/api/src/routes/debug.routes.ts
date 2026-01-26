@@ -21,7 +21,14 @@ router.get('/config', (req, res) => {
             origin: req.headers.origin,
             referer: req.headers.referer,
             host: req.headers.host,
-            matches: req.headers.origin ? actualTrustedOrigins?.includes(req.headers.origin) : 'no-origin',
+            protocol: req.protocol,
+            secure: req.secure,
+            xForwardedProto: req.get('x-forwarded-proto'),
+            matches: req.headers.origin ? actualTrustedOrigins?.includes(req.headers.origin) : 'no-origin-header',
+            manualCheck: req.query.origin ? {
+                tested: req.query.origin,
+                result: actualTrustedOrigins?.includes(req.query.origin as string)
+            } : 'provide ?origin=URL to test'
         }
     });
 });
