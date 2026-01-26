@@ -3,6 +3,8 @@ import { Router } from 'express';
 const router = Router();
 
 import { auth } from '../config/auth.js';
+import { db } from '../config/db.js';
+import { sql } from 'drizzle-orm';
 
 router.get('/config', (req, res) => {
     // Inspect actual auth configuration
@@ -31,6 +33,35 @@ router.get('/config', (req, res) => {
             } : 'provide ?origin=URL to test'
         }
     });
+});
+
+router.get('/db', async (req, res) => {
+    try {
+        // Try a simple query to assert connection
+        const result = await db.execute(sql`SELECT NOW() as now`);
+
+        // Try to check if tables exist (Postgres specific)
+        const tables = await db.execute(sql`
+            SELECT table_name 
+            FROM information_schema.tables 
+            WHERE table_schema = 'public'
+        `);
+
+        res.json({
+            status: 'ok',
+            connection: 'success',
+            time: result.rows[0],
+            tables: tables.rows.map((r: any) => r.table_name)
+        });
+    } catch (error: any) {
+        console.error('Debug DB Error:', error);
+        res.status(500).json({
+            status: 'error',
+            message: error.message,
+            code: error.code, // Postgres error code
+            detail: error.detail
+        });
+    }
 });
 
 export default router;
