@@ -5,6 +5,7 @@ import path from 'path';
 import fs from 'fs';
 
 const app = express();
+app.set('trust proxy', 1); // Trust first proxy (Vercel/NGINX)
 
 // Diagnostic endpoint - no dependencies, always works
 app.get('/api/health', (req: Request, res: Response) => {
