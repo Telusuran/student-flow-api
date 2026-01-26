@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { authMiddleware } from '../middleware/auth.middleware';
-import { messagingService } from '../services/messaging.service';
+import { authMiddleware } from '../middleware/auth.middleware.js';
+import { messagingService } from '../services/messaging.service.js';
 
 const router = Router();
 

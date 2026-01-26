@@ -1,9 +1,9 @@
 import { eq, desc, asc } from 'drizzle-orm';
-import { db, type Database } from '../config/db';
+import { db, type Database } from '../config/db.js';
 import {
     channels,
     messages,
-} from '../db/schema/messaging.schema';
+} from '../db/schema/messaging.schema.js';
 
 export class MessagingService {
     constructor(private database: Database = db) { }
