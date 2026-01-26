@@ -187,15 +187,6 @@ export const ProjectSpacePage: React.FC = () => {
                                             <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:bg-cta"></div>
                                         </label>
                                     </div>
-                                    {!isAllProjectsMode && (
-                                        <Link
-                                            to={`/project/settings?projectId=${selectedProjectId}`}
-                                            className="flex items-center justify-center size-10 rounded-xl border border-secondary-accent/20 bg-white text-secondary-accent hover:border-cta hover:text-cta transition-colors shadow-sm"
-                                            title="Project Settings"
-                                        >
-                                            <span className="material-symbols-outlined text-[20px]">settings</span>
-                                        </Link>
-                                    )}
                                     <Link to={`/project?projectId=${selectedProjectId}`} className="flex items-center justify-center gap-2 h-10 px-4 bg-cta hover:bg-cta/90 text-white text-sm font-bold rounded-lg transition-colors shadow-lg shadow-cta/30">
                                         <span className="material-symbols-outlined text-[20px]">view_kanban</span>
                                         <span>Board View</span>

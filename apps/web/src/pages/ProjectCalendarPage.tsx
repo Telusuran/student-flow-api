@@ -179,15 +179,6 @@ export const ProjectCalendarPage: React.FC = () => {
                             </div>
                             <div className="flex items-center gap-3">
                                 {selectedProjectId && <ViewSwitcher projectId={selectedProjectId} currentView="calendar" />}
-                                {!isAllProjectsMode && selectedProjectId && (
-                                    <Link
-                                        to={`/project/settings?projectId=${selectedProjectId}`}
-                                        className="flex items-center justify-center size-10 rounded-xl border border-secondary-accent/20 bg-white text-secondary-accent hover:border-cta hover:text-cta transition-colors shadow-sm"
-                                        title="Project Settings"
-                                    >
-                                        <span className="material-symbols-outlined text-[20px]">settings</span>
-                                    </Link>
-                                )}
                             </div>
                         </div>
                     </div>

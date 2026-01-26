@@ -28,7 +28,7 @@ export const DeleteProjectPage: React.FC = () => {
                     <div className="flex items-center gap-9">
                         <Link to="/project" className="text-text-main hover:text-custom-red transition-colors text-sm font-medium leading-normal">Projects</Link>
                         <a href="#" className="text-text-main hover:text-custom-red transition-colors text-sm font-medium leading-normal">Progress</a>
-                        <Link to="/project/settings" className="text-text-main hover:text-custom-red transition-colors text-sm font-medium leading-normal">Settings</Link>
+                        <Link to="/project" className="text-text-main hover:text-custom-red transition-colors text-sm font-medium leading-normal">Projects</Link>
                     </div>
                     <div className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-white shadow-sm" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCzi4wHlaYGdiKi5uCOYqDnt5iwTHqEAvyVWgiLxV9tdnd0OOWWmbHf8KFHRrxbzZ7Qt6rZHmS8NpIVZd9ij_Ku-w4a0TDaANX1IZ1eBAnyW-FJ3CPR98lcTq6LVvtNUhoXW5dzmcyz4TNmnzsyokIR_eHS1tgBERfXo_nF851rTfU7l3oZ5WOjvHGj7eR7srffjPslQXlyBR69R981Y1R5NF8_Tj1sBOHeauY4fGDwuvl5EbcDxD9JkOp4B0DquE6ca9fZu-CsUvuU')" }}></div>
                 </div>
@@ -80,7 +80,7 @@ export const DeleteProjectPage: React.FC = () => {
 
                         {/* Action Buttons */}
                         <div className="flex flex-col-reverse sm:flex-row gap-4 sm:justify-end mt-4 pt-4 border-t border-[#E6E6D8]">
-                            <Link to="/project/settings" className="flex items-center justify-center h-12 px-6 rounded-lg text-custom-back hover:text-[#6a7a6a] hover:bg-[#EAEAD0] font-bold text-sm transition-colors cursor-pointer w-full sm:w-auto">
+                            <Link to="/project" className="flex items-center justify-center h-12 px-6 rounded-lg text-custom-back hover:text-[#6a7a6a] hover:bg-[#EAEAD0] font-bold text-sm transition-colors cursor-pointer w-full sm:w-auto">
                                 Cancel
                             </Link>
                             <button

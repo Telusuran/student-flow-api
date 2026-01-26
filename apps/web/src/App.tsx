@@ -19,7 +19,6 @@ import { AccountDeletedPage } from './pages/AccountDeletedPage'
 import { CreateProjectPage } from './pages/CreateProjectPage'
 import { CreateProjectTimelinePage } from './pages/CreateProjectTimelinePage'
 import { CreateProjectReviewPage } from './pages/CreateProjectReviewPage'
-import { ProjectSettingsPage } from './pages/ProjectSettingsPage'
 import { DeleteProjectPage } from './pages/DeleteProjectPage'
 import { ProjectDeletedPage } from './pages/ProjectDeletedPage'
 import { ArchivedProjectsPage } from './pages/ArchivedProjectsPage'
@@ -69,7 +68,6 @@ function App() {
         <Route path="/create-project" element={<CreateProjectPage />} />
         <Route path="/create-project/timeline" element={<CreateProjectTimelinePage />} />
         <Route path="/create-project/review" element={<CreateProjectReviewPage />} />
-        <Route path="/project/settings" element={<ProjectSettingsPage />} />
         <Route path="/project/delete" element={<DeleteProjectPage />} />
         <Route path="/project/deleted" element={<ProjectDeletedPage />} />
         <Route path="/archived" element={<ArchivedProjectsPage />} />

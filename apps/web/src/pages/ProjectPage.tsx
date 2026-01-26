@@ -387,26 +387,15 @@ export const ProjectPage: React.FC = () => {
                                     <ViewSwitcher projectId={selectedProjectId || 'all'} currentView="board" />
 
                                     {!isAllProjectsMode && selectedProjectId && (
-                                        <>
-                                            <Link
-                                                to={`/project/${selectedProjectId}/resources`}
-                                                className={`flex items-center justify-center size-10 rounded-xl border transition-all ${isFocusMode
-                                                    ? 'bg-white/10 border-white/10 text-white hover:bg-white/20'
-                                                    : 'bg-white border-secondary-accent/20 text-secondary-accent hover:border-cta/50 hover:text-cta hover:shadow-sm'}`}
-                                                title="Project Resources"
-                                            >
-                                                <span className="material-symbols-outlined text-[20px]">folder_open</span>
-                                            </Link>
-                                            <Link
-                                                to={`/project/settings?projectId=${selectedProjectId}`}
-                                                className={`flex items-center justify-center size-10 rounded-xl border transition-all ${isFocusMode
-                                                    ? 'bg-white/10 border-white/10 text-white hover:bg-white/20'
-                                                    : 'bg-white border-secondary-accent/20 text-secondary-accent hover:border-cta/50 hover:text-cta hover:shadow-sm'}`}
-                                                title="Project Settings"
-                                            >
-                                                <span className="material-symbols-outlined text-[20px]">settings</span>
-                                            </Link>
-                                        </>
+                                        <Link
+                                            to={`/project/${selectedProjectId}/resources`}
+                                            className={`flex items-center justify-center size-10 rounded-xl border transition-all ${isFocusMode
+                                                ? 'bg-white/10 border-white/10 text-white hover:bg-white/20'
+                                                : 'bg-white border-secondary-accent/20 text-secondary-accent hover:border-cta/50 hover:text-cta hover:shadow-sm'}`}
+                                            title="Project Resources"
+                                        >
+                                            <span className="material-symbols-outlined text-[20px]">folder_open</span>
+                                        </Link>
                                     )}
 
                                     {!isAllProjectsMode && (
@@ -586,8 +575,8 @@ export const ProjectPage: React.FC = () => {
                                                 <div className="flex items-start justify-between gap-2 mb-2">
                                                     <p className="text-sm font-bold text-text-main flex-1">{suggestion.title}</p>
                                                     <span className={`text-[10px] font-bold px-2 py-1 rounded whitespace-nowrap ${suggestion.priority === 'high' ? 'bg-red-100 text-red-600' :
-                                                            suggestion.priority === 'medium' ? 'bg-orange-100 text-orange-600' :
-                                                                'bg-blue-100 text-blue-600'
+                                                        suggestion.priority === 'medium' ? 'bg-orange-100 text-orange-600' :
+                                                            'bg-blue-100 text-blue-600'
                                                         }`}>
                                                         {suggestion.priority}
                                                     </span>

@@ -1,8 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useNotificationSettings, useUpdateNotificationSettings } from '../hooks/useNotificationSettings';
+import { useCurrentUser } from '../hooks/useCurrentUser';
 
 export const NotificationSettingsPage: React.FC = () => {
-    // State management for toggles
+    const { data: user } = useCurrentUser();
+    const { data: serverSettings, isLoading } = useNotificationSettings();
+    const updateSettings = useUpdateNotificationSettings();
+
+    // Local state for form
     const [settings, setSettings] = useState({
         taskAssigned: true,
         taskAssignedEmail: true,
@@ -15,19 +21,80 @@ export const NotificationSettingsPage: React.FC = () => {
         documentUploaded: false
     });
 
+    const [hasChanges, setHasChanges] = useState(false);
+    const [saveSuccess, setSaveSuccess] = useState(false);
+
+    // Sync local state with server data
+    useEffect(() => {
+        if (serverSettings) {
+            setSettings({
+                taskAssigned: serverSettings.taskAssigned ?? true,
+                taskAssignedEmail: serverSettings.taskAssignedEmail ?? true,
+                taskAssignedInApp: serverSettings.taskAssignedInApp ?? true,
+                taskStatusChange: serverSettings.taskStatusChange ?? false,
+                deadlineApproaching: serverSettings.deadlineApproaching ?? true,
+                deadlinePush: serverSettings.deadlinePush ?? true,
+                alertTime: serverSettings.alertTime ?? '24 hours before',
+                projectReminders: serverSettings.projectReminders ?? true,
+                documentUploaded: serverSettings.documentUploaded ?? false
+            });
+            setHasChanges(false);
+        }
+    }, [serverSettings]);
+
     const handleToggle = (key: keyof typeof settings) => {
         setSettings(prev => ({
             ...prev,
             [key]: !prev[key]
         }));
+        setHasChanges(true);
+        setSaveSuccess(false);
     };
 
-    const handleChange = (key: keyof typeof settings, value: any) => {
+    const handleChange = (key: keyof typeof settings, value: string | boolean) => {
         setSettings(prev => ({
             ...prev,
             [key]: value
         }));
+        setHasChanges(true);
+        setSaveSuccess(false);
     };
+
+    const handleSave = async () => {
+        try {
+            await updateSettings.mutateAsync(settings);
+            setHasChanges(false);
+            setSaveSuccess(true);
+            setTimeout(() => setSaveSuccess(false), 3000);
+        } catch (error) {
+            console.error('Failed to save settings:', error);
+        }
+    };
+
+    const handleCancel = () => {
+        if (serverSettings) {
+            setSettings({
+                taskAssigned: serverSettings.taskAssigned ?? true,
+                taskAssignedEmail: serverSettings.taskAssignedEmail ?? true,
+                taskAssignedInApp: serverSettings.taskAssignedInApp ?? true,
+                taskStatusChange: serverSettings.taskStatusChange ?? false,
+                deadlineApproaching: serverSettings.deadlineApproaching ?? true,
+                deadlinePush: serverSettings.deadlinePush ?? true,
+                alertTime: serverSettings.alertTime ?? '24 hours before',
+                projectReminders: serverSettings.projectReminders ?? true,
+                documentUploaded: serverSettings.documentUploaded ?? false
+            });
+        }
+        setHasChanges(false);
+    };
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-background-light">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="bg-background-light dark:bg-background-dark text-text-main min-h-screen flex flex-col md:flex-row overflow-x-hidden font-display">
@@ -36,9 +103,12 @@ export const NotificationSettingsPage: React.FC = () => {
                 <div className="p-6 flex flex-col gap-8 h-full">
                     {/* User Profile Summary */}
                     <div className="flex items-center gap-4">
-                        <div className="bg-center bg-no-repeat bg-cover rounded-full size-12 shadow-sm" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuCR5ocG2gIzjnXSO8ij6EXu0Fuawswg7Wy1vzml9jMAadcEIyZTR07u-Wgp4_2jTLgULmEL6U7dK6-Gn_gFLji2toUJO-Dl-XpzVNZMe4mpS1xfVC5-nBqJ1wCYT8Z1JCkdu7xC9j7MxT5Xm4UKxDRBOb8tyOxogOMBHJCQtaZBRxr5Hr-Mrnn3k0xbOcOXP9IoUjhUaAAI0O6wFABl63fQUcnI-rA0V3GQJ0N9CtFlA871tg6wv6_2Fja0Dae9XrSalCg8OdldZ8XR")' }}></div>
+                        <div
+                            className="bg-center bg-no-repeat bg-cover rounded-full size-12 shadow-sm"
+                            style={{ backgroundImage: `url("${user?.image || `https://ui-avatars.com/api/?name=${user?.name || 'User'}`}")` }}
+                        ></div>
                         <div className="flex flex-col">
-                            <h1 className="text-text-main text-lg font-medium leading-tight">Alex Morgan</h1>
+                            <h1 className="text-text-main text-lg font-medium leading-tight">{user?.name || 'User'}</h1>
                             <p className="text-text-muted text-sm font-normal">Student Account</p>
                         </div>
                     </div>
@@ -56,14 +126,6 @@ export const NotificationSettingsPage: React.FC = () => {
                         <Link to="/settings/notifications" className="flex items-center gap-3 px-3 py-3 rounded-lg bg-card-beige shadow-sm">
                             <span className="material-symbols-outlined text-text-main filled">notifications</span>
                             <p className="text-text-main text-base font-medium">Notifications</p>
-                        </Link>
-                        <a className="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-background-light transition-colors group" href="#">
-                            <span className="material-symbols-outlined text-text-muted group-hover:text-text-main">extension</span>
-                            <p className="text-text-main text-base font-medium">Integrations</p>
-                        </a>
-                        <Link to="/settings/account" className="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-background-light transition-colors group">
-                            <span className="material-symbols-outlined text-text-muted group-hover:text-text-main">credit_card</span>
-                            <p className="text-text-main text-base font-medium">Billing</p>
                         </Link>
                     </div>
                     <div className="mt-auto">
@@ -85,14 +147,24 @@ export const NotificationSettingsPage: React.FC = () => {
                     </div>
                 </header>
 
+                {/* Success Message */}
+                {saveSuccess && (
+                    <div className="px-8 max-w-5xl mx-auto w-full">
+                        <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3 mb-6">
+                            <span className="material-symbols-outlined text-green-600">check_circle</span>
+                            <p className="text-green-700 font-medium">Settings saved successfully!</p>
+                        </div>
+                    </div>
+                )}
+
                 {/* Settings Content */}
                 <div className="px-8 pb-20 max-w-5xl mx-auto w-full flex flex-col gap-8">
                     {/* Section: Task Updates */}
                     <section className="flex flex-col gap-4">
                         <h2 className="text-text-main text-xl font-bold px-1">Task Updates</h2>
                         <div className="bg-card-beige rounded-xl shadow-sm p-6 flex flex-col gap-6">
-                            {/* Item 1 */}
-                            <div className="flex flex-col gap-4 border-b border-[#e5e3dc] pb-6 last:border-0 last:pb-0">
+                            {/* Item 1 - New Task Assigned */}
+                            <div className="flex flex-col gap-4 border-b border-[#e5e3dc] pb-6">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-4">
                                         <div className="bg-white rounded-lg p-2 shadow-sm text-text-main flex items-center justify-center size-10">
@@ -138,7 +210,7 @@ export const NotificationSettingsPage: React.FC = () => {
                                 </div>
                             </div>
 
-                            {/* Item 2 */}
+                            {/* Item 2 - Task Status Change */}
                             <div className="flex flex-col gap-4">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-4">
@@ -160,17 +232,6 @@ export const NotificationSettingsPage: React.FC = () => {
                                         <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                                     </label>
                                 </div>
-                                {/* Channels */}
-                                <div className={`pl-14 flex gap-6 ${!settings.taskStatusChange ? 'opacity-50' : ''}`}>
-                                    <label className="flex items-center gap-2 cursor-pointer group">
-                                        <input type="checkbox" className="w-4 h-4 text-primary bg-white border-gray-300 rounded focus:ring-primary focus:ring-2" disabled={!settings.taskStatusChange} />
-                                        <span className="text-sm font-medium text-text-main">Email</span>
-                                    </label>
-                                    <label className="flex items-center gap-2 cursor-pointer group">
-                                        <input type="checkbox" className="w-4 h-4 text-primary bg-white border-gray-300 rounded focus:ring-primary focus:ring-2" disabled={!settings.taskStatusChange} />
-                                        <span className="text-sm font-medium text-text-main">In-App</span>
-                                    </label>
-                                </div>
                             </div>
                         </div>
                     </section>
@@ -179,7 +240,7 @@ export const NotificationSettingsPage: React.FC = () => {
                     <section className="flex flex-col gap-4">
                         <h2 className="text-text-main text-xl font-bold px-1">Deadlines & Time</h2>
                         <div className="bg-card-beige rounded-xl shadow-sm p-6 flex flex-col gap-6">
-                            <div className="flex flex-col gap-4 border-b border-[#e5e3dc] pb-6 last:border-0 last:pb-0">
+                            <div className="flex flex-col gap-4 border-b border-[#e5e3dc] pb-6">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-4">
                                         <div className="bg-white rounded-lg p-2 shadow-sm text-text-main flex items-center justify-center size-10">
@@ -277,12 +338,29 @@ export const NotificationSettingsPage: React.FC = () => {
 
                     {/* Action Buttons */}
                     <div className="flex items-center justify-end gap-4 pt-4">
-                        <button className="px-6 py-3 rounded-lg text-text-main font-medium hover:bg-black/5 transition-colors">
+                        <button
+                            onClick={handleCancel}
+                            disabled={!hasChanges}
+                            className="px-6 py-3 rounded-lg text-text-main font-medium hover:bg-black/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
                             Cancel
                         </button>
-                        <button className="px-8 py-3 rounded-lg bg-primary text-black font-semibold shadow-md hover:bg-[#d4a012] transition-colors flex items-center gap-2">
-                            <span className="material-symbols-outlined text-[20px]">save</span>
-                            Save Changes
+                        <button
+                            onClick={handleSave}
+                            disabled={!hasChanges || updateSettings.isPending}
+                            className="px-8 py-3 rounded-lg bg-primary text-black font-semibold shadow-md hover:bg-[#d4a012] transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            {updateSettings.isPending ? (
+                                <>
+                                    <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-black"></span>
+                                    Saving...
+                                </>
+                            ) : (
+                                <>
+                                    <span className="material-symbols-outlined text-[20px]">save</span>
+                                    Save Changes
+                                </>
+                            )}
                         </button>
                     </div>
                 </div>
