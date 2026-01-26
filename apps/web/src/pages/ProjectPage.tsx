@@ -432,8 +432,8 @@ export const ProjectPage: React.FC = () => {
                     {/* Kanban Board */}
                     {!tasksLoading && (
                         <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-                            <div className="flex-1 overflow-x-auto overflow-y-hidden relative">
-                                <div className="h-full p-6 min-w-[900px] max-w-[1400px] mx-auto grid grid-cols-3 gap-6 relative z-10 transition-all duration-500">
+                            <div className="flex-1 overflow-y-auto lg:overflow-y-hidden lg:overflow-x-auto relative scrollbar-hide">
+                                <div className="min-h-full p-4 lg:p-6 w-full lg:w-auto lg:min-w-[900px] max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6 relative z-10 transition-all duration-500">
                                     <KanbanColumn
                                         title="To Do"
                                         tasks={todoTasks}
