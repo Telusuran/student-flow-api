@@ -57,6 +57,8 @@ app.all('/api/auth/*', toNodeHandler(auth));
 
 // API routes
 app.use('/api', routes);
+import debugRoutes from './routes/debug.routes.js';
+app.use('/api/debug', debugRoutes);
 
 // 404 handler
 app.use(notFoundHandler);

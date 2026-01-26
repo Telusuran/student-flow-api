@@ -55,42 +55,55 @@ test.describe('Authentication Tests', () => {
         await expect(page.getByText('Password must be at least 6 characters')).toBeVisible();
     });
 
-    test('TC003: User Login Success', async ({ page }) => {
-        // Use the user created in TC001?
-        // Tests run in parallel/isolation usually, so we might need to register first or seed data.
-        // For simplicity in this suite, let's register a NEW user just for login test to be self-contained
-        // Or assume the user from TC001 exists if running serially (by default fullyParallel is true).
-        // Best practice: Register a fresh user via API or UI before login test.
-        // Let's do UI registration for now quickly.
-
+    test('TC003: User Login Logic', async ({ page }) => {
+        // Register a fresh user specifically for this test
+        const uniqueLoginId = Date.now() + 1;
         const loginUser = {
-            name: `Login User ${uniqueId}`,
-            email: `login${uniqueId}@example.com`,
-            password: 'Password123!'
+            name: `Login User ${uniqueLoginId}`,
+            email: `login${uniqueLoginId}@example.com`,
+            password: 'Password123!',
         };
 
-        // Register first
+        // 1. Initial Registration
         await page.goto('/register');
         await page.fill('input[id="name"]', loginUser.name);
         await page.fill('input[id="email"]', loginUser.email);
         await page.fill('input[id="password"]', loginUser.password);
         await page.fill('input[id="confirm-password"]', loginUser.password);
         await page.click('button[type="submit"]');
-        // Wait for successful registration which redirects to home
+
+        // Wait for successful redirect after registration
         await page.waitForURL('/');
+        console.log('Registration successful, current URL:', page.url());
 
-        // Logout if possible, or just open new context. 
-        // But for this test, let's just test LOGIN failure logic first because Success implies we are logged in.
-
-        // To test "Login" explicitly, we need to be logged out.
-        // Let's clear cookies/storage
+        // 2. Logout to test explicit login
+        // Clear all storage to forcedly logout
         await page.context().clearCookies();
         await page.evaluate(() => localStorage.clear());
-
         await page.goto('/login');
+        console.log('Logged out, at login page:', page.url());
+
+        // 3. Perform Login
         await page.fill('input[id="email"]', loginUser.email);
         await page.fill('input[id="password"]', loginUser.password);
+
+        // Setup console listener to catch auth errors in browser
+        page.on('console', msg => {
+            if (msg.type() === 'error') console.log(`[Browser Error]: ${msg.text()}`);
+        });
+
         await page.click('button[type="submit"]');
+
+        // 4. Verify Success
+        try {
+            await page.waitForURL('/', { timeout: 10000 });
+            console.log('Login successful, redirected to home');
+        } catch (e) {
+            console.log('Login failed or timed out. Current URL:', page.url());
+            // Take screenshot on failure
+            await page.screenshot({ path: 'login-failure.png' });
+            throw e;
+        }
 
         await expect(page).toHaveURL('/');
     });
