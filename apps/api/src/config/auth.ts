@@ -20,10 +20,17 @@ export const auth = betterAuth({
         'http://localhost:5173',
         'http://localhost:5174',
         'http://localhost:5175',
+        process.env.BETTER_AUTH_URL || '',
         ...(process.env.FRONTEND_URL
             ? process.env.FRONTEND_URL.split(',').map(url => url.trim().startsWith('http') ? url.trim() : `https://${url.trim()}`)
             : [])
     ].filter(Boolean),
+    advanced: {
+        defaultCookieAttributes: {
+            sameSite: "none",
+            secure: true,
+        },
+    },
 });
 
 export type Auth = typeof auth;
