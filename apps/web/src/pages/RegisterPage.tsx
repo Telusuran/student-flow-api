@@ -172,7 +172,7 @@ export const RegisterPage: React.FC = () => {
                                         <span className="material-symbols-outlined text-[#887e63] group-focus-within:text-cta-gold transition-colors text-[20px]">lock</span>
                                     </div>
                                     <input
-                                        className="w-full bg-surface-beige/50 text-[#181611] placeholder-[#887e63]/60 text-base rounded-xl border-none focus:ring-2 focus:ring-cta-gold/50 focus:bg-[#fcfcf9] transition-all duration-200 h-14 pl-12 pr-10 shadow-inner"
+                                        className="w-full bg-surface-beige/30 text-[#181611] placeholder-[#887e63]/60 text-base rounded-xl border-none focus:ring-2 focus:ring-cta-gold/50 focus:bg-white/80 transition-all duration-200 h-14 pl-12 pr-10"
                                         id="password"
                                         placeholder="Create password"
                                         type={showPassword ? "text" : "password"}
@@ -180,6 +180,7 @@ export const RegisterPage: React.FC = () => {
                                         onChange={(e) => setPassword(e.target.value)}
                                         required
                                         disabled={isLoading}
+                                        autoComplete="new-password"
                                     />
                                     <button
                                         type="button"
@@ -201,7 +202,7 @@ export const RegisterPage: React.FC = () => {
                                         <span className="material-symbols-outlined text-[#887e63] group-focus-within:text-cta-gold transition-colors text-[20px]">verified_user</span>
                                     </div>
                                     <input
-                                        className="w-full bg-surface-beige/50 text-[#181611] placeholder-[#887e63]/60 text-base rounded-xl border-none focus:ring-2 focus:ring-cta-gold/50 focus:bg-[#fcfcf9] transition-all duration-200 h-14 pl-12 pr-4 shadow-inner"
+                                        className="w-full bg-surface-beige/30 text-[#181611] placeholder-[#887e63]/60 text-base rounded-xl border-none focus:ring-2 focus:ring-cta-gold/50 focus:bg-white/80 transition-all duration-200 h-14 pl-12 pr-4"
                                         id="confirm-password"
                                         placeholder="Re-enter password"
                                         type="password"
@@ -209,6 +210,7 @@ export const RegisterPage: React.FC = () => {
                                         onChange={(e) => setConfirmPassword(e.target.value)}
                                         required
                                         disabled={isLoading}
+                                        autoComplete="new-password"
                                     />
                                 </div>
                             </div>
