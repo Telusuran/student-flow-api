@@ -6,12 +6,18 @@ export interface CurrentUser {
     name: string;
     email: string;
     image?: string;
+    institution?: string | null;
+    major?: string | null;
+    bio?: string | null;
 }
 
 export interface UpdateProfileData {
     name?: string;
     image?: string;
     email?: string;
+    institution?: string;
+    major?: string;
+    bio?: string;
 }
 
 export const useCurrentUser = () => {

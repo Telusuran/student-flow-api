@@ -1,6 +1,15 @@
-import { ilike, or, and, ne } from 'drizzle-orm';
+import { ilike, or, and, ne, eq } from 'drizzle-orm';
 import { db, type Database } from '../config/db.js';
-import { user } from '../db/schema/index.js';
+import { user, userProfiles } from '../db/schema/index.js';
+
+interface ProfileData {
+    name?: string;
+    image?: string;
+    email?: string;
+    institution?: string;
+    major?: string;
+    bio?: string;
+}
 
 export class UsersService {
     constructor(private database: Database = db) { }
@@ -29,7 +38,8 @@ export class UsersService {
     }
 
     async getById(id: string) {
-        return this.database.query.user.findFirst({
+        // Get base user data
+        const userData = await this.database.query.user.findFirst({
             where: eq(user.id, id),
             columns: {
                 id: true,
@@ -38,10 +48,30 @@ export class UsersService {
                 image: true,
             },
         });
+
+        if (!userData) return null;
+
+        // Get profile data if exists
+        const profileData = await this.database.query.userProfiles.findFirst({
+            where: eq(userProfiles.userId, id),
+            columns: {
+                institution: true,
+                major: true,
+                bio: true,
+            },
+        });
+
+        return {
+            ...userData,
+            institution: profileData?.institution ?? null,
+            major: profileData?.major ?? null,
+            bio: profileData?.bio ?? null,
+        };
     }
 
-    async update(id: string, data: { name?: string; image?: string; email?: string }) {
-        const result = await this.database
+    async update(id: string, data: ProfileData) {
+        // Update user table (name, image, email)
+        const userUpdateResult = await this.database
             .update(user)
             .set({
                 name: data.name,
@@ -56,7 +86,46 @@ export class UsersService {
                 email: user.email,
                 image: user.image,
             });
-        return result[0];
+
+        if (userUpdateResult.length === 0) {
+            throw new Error('User not found');
+        }
+
+        // Update or insert profile data (institution, major, bio)
+        const hasProfileFields = data.institution !== undefined || data.major !== undefined || data.bio !== undefined;
+
+        if (hasProfileFields) {
+            // Check if profile exists
+            const existingProfile = await this.database.query.userProfiles.findFirst({
+                where: eq(userProfiles.userId, id),
+            });
+
+            if (existingProfile) {
+                // Update existing profile
+                await this.database
+                    .update(userProfiles)
+                    .set({
+                        institution: data.institution,
+                        major: data.major,
+                        bio: data.bio,
+                        updatedAt: new Date(),
+                    })
+                    .where(eq(userProfiles.userId, id));
+            } else {
+                // Insert new profile
+                await this.database
+                    .insert(userProfiles)
+                    .values({
+                        userId: id,
+                        institution: data.institution ?? null,
+                        major: data.major ?? null,
+                        bio: data.bio ?? null,
+                    });
+            }
+        }
+
+        // Return combined data
+        return this.getById(id);
     }
 
     async delete(id: string) {
@@ -65,5 +134,4 @@ export class UsersService {
     }
 }
 
-import { eq } from 'drizzle-orm';
 export const usersService = new UsersService();

@@ -9,6 +9,8 @@ export const userProfiles = pgTable('user_profiles', {
     avatarUrl: text('avatar_url'),
     role: text('role').default('student'), // student, mentor, admin
     institution: text('institution'),
+    major: text('major'),
+    bio: text('bio'),
     currentTerm: text('current_term'),
     timezone: text('timezone').default('UTC'),
     createdAt: timestamp('created_at').defaultNow(),

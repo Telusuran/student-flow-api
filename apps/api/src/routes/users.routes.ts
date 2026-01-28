@@ -10,6 +10,9 @@ const updateProfileSchema = z.object({
     name: z.string().min(1).max(100).optional(),
     image: z.string().url().optional(),
     email: z.string().email().optional(),
+    institution: z.string().max(200).optional(),
+    major: z.string().max(200).optional(),
+    bio: z.string().max(1000).optional(),
 });
 
 // Schema for search query

@@ -8,13 +8,19 @@ export const EditProfilePage: React.FC = () => {
     const updateProfile = useUpdateProfile();
 
     const [name, setName] = useState('');
+    const [institution, setInstitution] = useState('');
+    const [major, setMajor] = useState('');
+    const [bio, setBio] = useState('');
     const [isSaving, setIsSaving] = useState(false);
     const [saveSuccess, setSaveSuccess] = useState(false);
 
     // Populate form with user data when loaded
     useEffect(() => {
-        if (user?.name) {
-            setName(user.name);
+        if (user) {
+            setName(user.name || '');
+            setInstitution(user.institution || '');
+            setMajor(user.major || '');
+            setBio(user.bio || '');
         }
     }, [user]);
 
@@ -28,7 +34,7 @@ export const EditProfilePage: React.FC = () => {
         setSaveSuccess(false);
 
         try {
-            await updateProfile.mutateAsync({ name });
+            await updateProfile.mutateAsync({ name, institution, major, bio });
             setSaveSuccess(true);
             setTimeout(() => {
                 navigate('/');
@@ -153,7 +159,7 @@ export const EditProfilePage: React.FC = () => {
                                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                             <span className="material-symbols-outlined text-text-muted/60">account_balance</span>
                                         </div>
-                                        <input className="block w-full pl-10 pr-3 py-3 bg-card-beige border-transparent rounded-xl text-text-main placeholder-text-muted focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all sm:text-sm shadow-sm" id="institution" name="institution" placeholder="University or School" type="text" defaultValue="State University of Tech" />
+                                        <input className="block w-full pl-10 pr-3 py-3 bg-card-beige border-transparent rounded-xl text-text-main placeholder-text-muted focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all sm:text-sm shadow-sm" id="institution" name="institution" placeholder="University or School" type="text" value={institution} onChange={(e) => setInstitution(e.target.value)} />
                                     </div>
                                 </div>
 
@@ -164,7 +170,7 @@ export const EditProfilePage: React.FC = () => {
                                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                             <span className="material-symbols-outlined text-text-muted/60">school</span>
                                         </div>
-                                        <input className="block w-full pl-10 pr-3 py-3 bg-card-beige border-transparent rounded-xl text-text-main placeholder-text-muted focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all sm:text-sm shadow-sm" id="major" name="major" placeholder="e.g. Computer Science" type="text" defaultValue="Computer Science" />
+                                        <input className="block w-full pl-10 pr-3 py-3 bg-card-beige border-transparent rounded-xl text-text-main placeholder-text-muted focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all sm:text-sm shadow-sm" id="major" name="major" placeholder="e.g. Computer Science" type="text" value={major} onChange={(e) => setMajor(e.target.value)} />
                                     </div>
                                 </div>
 
@@ -207,7 +213,7 @@ export const EditProfilePage: React.FC = () => {
                                 <div className="col-span-1 md:col-span-2">
                                     <label className="block text-sm font-medium text-text-main mb-2" htmlFor="bio">Bio</label>
                                     <div className="relative">
-                                        <textarea className="block w-full p-3 bg-card-beige border-transparent rounded-xl text-text-main placeholder-text-muted focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all sm:text-sm shadow-sm resize-none" id="bio" name="bio" placeholder="Tell us a little about yourself and your academic interests..." rows={4}></textarea>
+                                        <textarea className="block w-full p-3 bg-card-beige border-transparent rounded-xl text-text-main placeholder-text-muted focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all sm:text-sm shadow-sm resize-none" id="bio" name="bio" placeholder="Tell us a little about yourself and your academic interests..." rows={4} value={bio} onChange={(e) => setBio(e.target.value)}></textarea>
                                     </div>
                                     <p className="mt-2 text-sm text-text-muted">Brief description for your profile. URLs are hyperlinked.</p>
                                 </div>
