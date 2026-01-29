@@ -1,7 +1,7 @@
 import { pgTable, text, timestamp, jsonb } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
-import { user } from './auth.schema.js';
-import { projects } from './projects.schema.js';
+import { user } from './auth.schema';
+import { projects } from './projects.schema';
 
 export const aiSuggestions = pgTable('ai_suggestions', {
     id: text('id')

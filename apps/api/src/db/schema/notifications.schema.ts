@@ -1,6 +1,6 @@
 import { pgTable, text, timestamp, boolean, jsonb } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
-import { user } from './auth.schema.js';
+import { user } from './auth.schema';
 
 export const notifications = pgTable('notifications', {
     id: text('id')
