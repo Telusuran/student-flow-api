@@ -216,14 +216,14 @@ export const DashboardPage: React.FC = () => {
                 </div>
 
                 {/* Cards Row */}
-                <div className="w-full min-h-[375px] flex justify-center items-start gap-6">
+                <div className="w-full h-[450px] flex justify-center items-start gap-6">
 
                     {/* Active Projects */}
                     <div
                         onClick={() => navigate('/project')}
                         className="w-1/3 h-full self-stretch bg-sidebar-blue shadow-soft overflow-hidden rounded-2xl border border-white flex flex-col gap-0 hover:translate-y-[-2px] transition-transform duration-300 cursor-pointer group"
                     >
-                        <div className="w-full py-5 px-6 bg-white/30 border-b border-secondary-accent/10 backdrop-blur-sm flex justify-between items-center group-hover:bg-white/50 transition-colors">
+                        <div className="w-full py-5 px-6 bg-white/30 border-b border-secondary-accent/10 backdrop-blur-sm flex justify-between items-center group-hover:bg-white/50 transition-colors shrink-0">
                             <h3 className="text-text-dark-blue text-lg font-bold leading-7 font-display">Active Projects</h3>
                             <div className="flex gap-3">
                                 <button
@@ -240,27 +240,36 @@ export const DashboardPage: React.FC = () => {
                                 </button>
                             </div>
                         </div>
-                        <div className="w-full p-2 flex flex-col items-center justify-center flex-1">
-                            {/* Project Item */}
-                            {activeProject ? (
-                                <div className="w-full p-4 rounded-xl flex items-center gap-4 hover:bg-white/40 transition-colors">
-                                    <div className="py-2 px-3 bg-blue-100 shadow-sm rounded-xl flex flex-col">
-                                        <div className="w-6 h-7 relative">
-                                            <div className="w-5 h-4 absolute left-[2px] top-[6px] bg-blue-600"></div>
-                                        </div>
-                                    </div>
-                                    <div className="flex-1 flex flex-col gap-1">
-                                        <div className="flex items-center">
-                                            <h4 className="flex-1 text-text-dark-blue text-base font-bold leading-6 font-display truncate">{activeProject.name}</h4>
-                                        </div>
-                                        <div className="flex items-center gap-3">
-                                            <div className="flex-1 h-2 bg-[#E6F0FA] rounded-full relative overflow-hidden">
-                                                <div className="h-full bg-blue-500 rounded-full" style={{ width: `${activeProjectProgress}%` }}></div>
+                        <div className="w-full p-2 flex flex-col items-center justify-start flex-1 overflow-y-auto gap-2">
+                            {/* Project List */}
+                            {projects && projects.length > 0 ? (
+                                projects.map((project) => {
+                                    const pTasks = tasks?.filter(t => t.projectId === project.id) || [];
+                                    const pTotal = pTasks.length;
+                                    const pCompleted = pTasks.filter(t => t.status === 'done').length;
+                                    const pProgress = pTotal > 0 ? Math.round((pCompleted / pTotal) * 100) : 0;
+
+                                    return (
+                                        <div key={project.id} className="w-full p-4 rounded-xl flex items-center gap-4 hover:bg-white/40 transition-colors shrink-0">
+                                            <div className="py-2 px-3 bg-blue-100 shadow-sm rounded-xl flex flex-col">
+                                                <div className="w-6 h-7 relative">
+                                                    <div className="w-5 h-4 absolute left-[2px] top-[6px] bg-blue-600"></div>
+                                                </div>
                                             </div>
-                                            <span className="text-secondary-accent text-xs font-bold leading-4 font-display">{activeProjectProgress}%</span>
+                                            <div className="flex-1 flex flex-col gap-1 overflow-hidden">
+                                                <div className="flex items-center">
+                                                    <h4 className="flex-1 text-text-dark-blue text-base font-bold leading-6 font-display truncate">{project.name}</h4>
+                                                </div>
+                                                <div className="flex items-center gap-3">
+                                                    <div className="flex-1 h-2 bg-[#E6F0FA] rounded-full relative overflow-hidden">
+                                                        <div className="h-full bg-blue-500 rounded-full" style={{ width: `${pProgress}%` }}></div>
+                                                    </div>
+                                                    <span className="text-secondary-accent text-xs font-bold leading-4 font-display">{pProgress}%</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
+                                    );
+                                })
                             ) : (
                                 <div className="text-center p-4">
                                     <p className="text-text-muted text-sm">No active projects</p>
@@ -275,7 +284,7 @@ export const DashboardPage: React.FC = () => {
                         onClick={() => navigate('/calendar')}
                         className="w-1/3 h-full self-stretch bg-sidebar-blue shadow-soft overflow-hidden rounded-2xl border border-white flex flex-col gap-0 hover:translate-y-[-2px] transition-transform duration-300 cursor-pointer group"
                     >
-                        <div className="w-full py-5 px-6 bg-white/30 border-b border-secondary-accent/10 backdrop-blur-sm flex justify-between items-center group-hover:bg-white/50 transition-colors">
+                        <div className="w-full py-5 px-6 bg-white/30 border-b border-secondary-accent/10 backdrop-blur-sm flex justify-between items-center group-hover:bg-white/50 transition-colors shrink-0">
                             <div className="flex flex-col">
                                 <h3 className="text-text-dark-blue text-lg font-bold leading-7 font-display">Upcoming Deadlines</h3>
                             </div>
@@ -283,36 +292,41 @@ export const DashboardPage: React.FC = () => {
                                 <span className="text-secondary-accent text-sm font-semibold leading-5 font-display">Calendar View</span>
                             </div>
                         </div>
-                        <div className="w-full p-4 flex flex-col items-center justify-center flex-1">
-                            {/* Deadline Item */}
-                            {nextDeadline && nextDeadline.dueDate ? (
-                                <div className="w-full p-4 bg-white shadow-sm overflow-hidden rounded-r-xl border-l-[3px] border-l-[#E6B325] flex items-start gap-4 hover:bg-neutral-50 transition-colors">
-                                    <div className="min-w-[50px] px-3 flex flex-col justify-center items-center">
-                                        <span className="text-[#E6B325] text-xs font-bold uppercase tracking-wider font-display">
-                                            {new Date(nextDeadline.dueDate).toLocaleString('default', { month: 'short' })}
-                                        </span>
-                                        <span className="text-[#E6B325] text-xl font-black leading-7 font-display">
-                                            {new Date(nextDeadline.dueDate).getDate()}
-                                        </span>
-                                    </div>
-                                    <div className="flex flex-col gap-1 w-full overflow-hidden">
-                                        <div className="flex items-center gap-2">
-                                            <div className="overflow-hidden flex flex-col pr-1 w-full">
-                                                <h4 className="text-slate-900 text-base font-bold leading-6 font-display truncate">{nextDeadline.title}</h4>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <div className="px-2 py-1 bg-yellow-100 shadow-inner rounded-md flex items-center">
-                                                <span className="text-yellow-800 text-xs font-bold leading-4 font-display">
-                                                    {daysRemaining > 0 ? `${daysRemaining} days` : daysRemaining === 0 ? 'Today' : 'Overdue'}
+                        <div className="w-full p-4 flex flex-col items-center justify-start flex-1 overflow-y-auto gap-2">
+                            {/* Deadline List */}
+                            {upcomingTasks && upcomingTasks.length > 0 ? (
+                                upcomingTasks.map((task) => {
+                                    const dDays = getDaysRemaining(task.dueDate!);
+                                    return (
+                                        <div key={task.id} className="w-full p-4 bg-white shadow-sm overflow-hidden rounded-r-xl border-l-[3px] border-l-[#E6B325] flex items-start gap-4 hover:bg-neutral-50 transition-colors shrink-0">
+                                            <div className="min-w-[50px] px-3 flex flex-col justify-center items-center">
+                                                <span className="text-[#E6B325] text-xs font-bold uppercase tracking-wider font-display">
+                                                    {new Date(task.dueDate!).toLocaleString('default', { month: 'short' })}
+                                                </span>
+                                                <span className="text-[#E6B325] text-xl font-black leading-7 font-display">
+                                                    {new Date(task.dueDate!).getDate()}
                                                 </span>
                                             </div>
-                                            <span className="text-text-muted text-sm font-normal leading-5 font-display truncate block">
-                                                {projects?.find(p => p.id === nextDeadline.projectId)?.name || 'Task'}
-                                            </span>
+                                            <div className="flex flex-col gap-1 w-full overflow-hidden">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="overflow-hidden flex flex-col pr-1 w-full">
+                                                        <h4 className="text-slate-900 text-base font-bold leading-6 font-display truncate">{task.title}</h4>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="px-2 py-1 bg-yellow-100 shadow-inner rounded-md flex items-center">
+                                                        <span className="text-yellow-800 text-xs font-bold leading-4 font-display">
+                                                            {dDays > 0 ? `${dDays} days` : dDays === 0 ? 'Today' : 'Overdue'}
+                                                        </span>
+                                                    </div>
+                                                    <span className="text-text-muted text-sm font-normal leading-5 font-display truncate block">
+                                                        {projects?.find(p => p.id === task.projectId)?.name || 'Task'}
+                                                    </span>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
+                                    );
+                                })
                             ) : (
                                 <div className="text-center p-4">
                                     <p className="text-text-muted text-sm">No upcoming deadlines</p>
