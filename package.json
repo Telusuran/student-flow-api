@@ -6,9 +6,10 @@
         "packages/*"
     ],
     "scripts": {
-        "dev": "concurrently \"npm run dev --workspace=apps/web\" \"npm run dev --workspace=apps/api\"",
+        "dev": "concurrently \"npm run dev --workspace=apps/web\" \"npm run dev --workspace=apps/api\" \"npm run dev --workspace=apps/cms\"",
         "dev:web": "npm run dev --workspace=apps/web",
         "dev:api": "npm run dev --workspace=apps/api",
+        "dev:cms": "npm run dev --workspace=apps/cms",
         "build": "npm run build --workspaces"
     },
     "devDependencies": {

@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.gradient-chart {
+    background: conic-gradient(#E6B325 0% 45%, #8A9A8A 45% 70%, #6B7B6B 70% 85%, #E6F0FA 85% 100%);
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.card-hoverable {
+    transition: all 0.3s ease;
+}
+
+.card-hoverable:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.toggle-checkbox:checked {
+    right: 0;
+    border-color: #E6B325;
+}
+
+.toggle-checkbox:checked+.toggle-label {
+    background-color: #E6B325;
+}
+
+.lampu-fokus-overlay {
+    background: linear-gradient(180deg, rgba(230, 179, 37, 0.0) 0%, rgba(230, 179, 37, 0.15) 100%);
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #E6F0FA;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #8A9A8A;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #758575;
+}

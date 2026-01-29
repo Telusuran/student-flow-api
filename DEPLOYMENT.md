@@ -80,6 +80,21 @@ This guide walks you through deploying the **Student Flow** application for free
 
 ---
 
+## Step 3.5: Deploy CMS (Vercel)
+1.  Go back to **Vercel Dashboard**.
+2.  Click **Add New...** -> **Project**.
+3.  Import the **SAME GitHub Repository**.
+4.  **Configure Project**:
+    *   **Root Directory**: Click "Edit" and select `apps/cms`.
+    *   **Framework Preset**: Vite (should auto-detect).
+    *   **Build Command**: `npm run build`
+    *   **Output Directory**: `dist`
+5.  **Environment Variables**:
+    *   `VITE_API_URL`: (Paste the URL of your **Backend** project from Step 2, e.g., `https://student-flow-api.vercel.app`)
+6.  Click **Deploy**.
+
+---
+
 ## Step 4: Link Operations
 1.  Get your **Frontend URL** (e.g., `https://student-flow-web.vercel.app`).
 2.  Go to your **Backend Project** settings in Vercel.
