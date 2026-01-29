@@ -202,7 +202,26 @@ router.delete('/users/:userId', async (req: Request, res: Response) => {
     try {
         const { userId } = req.params;
 
-        // Delete user (cascades to profile, sessions, etc.)
+        // Delete related data first (in order of dependencies)
+        // 1. Delete user's project memberships
+        await db.execute(sql`DELETE FROM project_members WHERE user_id = ${userId}`);
+
+        // 2. Delete user's task assignments
+        await db.execute(sql`DELETE FROM task_assignees WHERE user_id = ${userId}`);
+
+        // 3. Delete user's sessions
+        await db.execute(sql`DELETE FROM session WHERE user_id = ${userId}`);
+
+        // 4. Delete user's accounts
+        await db.execute(sql`DELETE FROM account WHERE user_id = ${userId}`);
+
+        // 5. Delete user's profile
+        await db.execute(sql`DELETE FROM user_profiles WHERE user_id = ${userId}`);
+
+        // 6. Update projects owned by this user (set owner to null or delete)
+        await db.execute(sql`UPDATE projects SET owner_id = NULL WHERE owner_id = ${userId}`);
+
+        // 7. Finally delete the user
         await db.delete(user).where(eq(user.id, userId));
 
         res.json({ success: true, message: 'User deleted successfully' });
