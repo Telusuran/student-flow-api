@@ -8,9 +8,16 @@ export interface StorageProvider {
 }
 
 class LocalStorageProvider implements StorageProvider {
-    private uploadDir = path.join(process.cwd(), 'uploads');
+    private uploadDir: string;
 
     constructor() {
+        // On Vercel (Lambda), only /tmp is writable
+        if (process.env.VERCEL === '1') {
+            this.uploadDir = path.join('/tmp', 'uploads');
+        } else {
+            this.uploadDir = path.join(process.cwd(), 'uploads');
+        }
+
         if (!fs.existsSync(this.uploadDir)) {
             fs.mkdirSync(this.uploadDir, { recursive: true });
         }
@@ -71,6 +78,10 @@ class VercelBlobStorageProvider implements StorageProvider {
 // We use Vercel Blob if running on Vercel AND token is present
 const isVercel = process.env.VERCEL === '1';
 const hasBlobToken = !!process.env.BLOB_READ_WRITE_TOKEN;
+
+if (isVercel && !hasBlobToken) {
+    console.warn("⚠️ Running on Vercel but BLOB_READ_WRITE_TOKEN is missing. Uploads will fail or be temporary.");
+}
 
 export const storageService = (isVercel && hasBlobToken)
     ? new VercelBlobStorageProvider()

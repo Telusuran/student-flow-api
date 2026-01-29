@@ -46,10 +46,22 @@ app.use(express.urlencoded({ extended: true }));
 // Serve uploads directory
 import path from 'path';
 import fs from 'fs';
-const uploadDir = path.join(process.cwd(), 'uploads');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
+
+// On Vercel, use /tmp/uploads if strictly needed, but prefer Blob storage
+let uploadDir = path.join(process.cwd(), 'uploads');
+if (process.env.VERCEL === '1') {
+    uploadDir = path.join('/tmp', 'uploads');
 }
+
+// Only attempt to create if not exists, and log error if fails (don't crash app)
+try {
+    if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+    }
+} catch (err) {
+    console.warn('Failed to create upload directory (expected on Vercel read-only FS):', err);
+}
+
 app.use('/uploads', express.static(uploadDir));
 
 // Better Auth handler - must be before other routes
