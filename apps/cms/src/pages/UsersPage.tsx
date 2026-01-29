@@ -5,6 +5,7 @@ import type { UserWithProfile } from '../lib/types';
 export default function UsersPage() {
     const [users, setUsers] = useState<UserWithProfile[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [roleFilter, setRoleFilter] = useState<string>('all');
 
@@ -13,11 +14,14 @@ export default function UsersPage() {
     }, []);
 
     const loadUsers = async () => {
+        setError(null);
         try {
             const data = await apiClient.get<UserWithProfile[]>('/admin/users');
+            console.log('Users loaded:', data);
             setUsers(data);
-        } catch (error) {
-            console.error('Failed to load users:', error);
+        } catch (err) {
+            console.error('Failed to load users:', err);
+            setError('Failed to load users. Check console for details.');
         } finally {
             setLoading(false);
         }
@@ -34,8 +38,9 @@ export default function UsersPage() {
         try {
             await apiClient.patch(`/admin/users/${userId}/role`, { role: newRole });
             loadUsers();
-        } catch (error) {
-            console.error('Failed to update user role:', error);
+        } catch (err) {
+            console.error('Failed to update user role:', err);
+            alert('Failed to update user role');
         }
     };
 
@@ -53,6 +58,12 @@ export default function UsersPage() {
                 <h1 className="text-2xl font-display font-bold text-text-main">User Management</h1>
                 <span className="text-text-muted">{users.length} users total</span>
             </div>
+
+            {error && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                    {error}
+                </div>
+            )}
 
             {/* Filters */}
             <div className="flex gap-4 flex-wrap">
@@ -120,7 +131,7 @@ export default function UsersPage() {
                                     {user.profile?.institution || '-'}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {new Date(user.createdAt).toLocaleDateString()}
+                                    {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-'}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <button className="text-primary hover:text-primary-hover mr-3">View</button>

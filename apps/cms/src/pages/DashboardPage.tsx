@@ -7,31 +7,36 @@ export default function DashboardPage() {
     const [recentUsers, setRecentUsers] = useState<UserWithProfile[]>([]);
     const [recentProjects, setRecentProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         loadDashboardData();
     }, []);
 
     const loadDashboardData = async () => {
+        setError(null);
         try {
-            // Load stats - we'll create these API endpoints
+            // Fetch stats from the dedicated stats endpoint
+            const statsRes = await apiClient.get<{ totalUsers: number; totalProjects: number; totalTasks: number }>('/admin/stats');
+
+            // Fetch recent data
             const [usersRes, projectsRes] = await Promise.all([
-                apiClient.get<UserWithProfile[]>('/admin/users?limit=5'),
-                apiClient.get<Project[]>('/admin/projects?limit=5'),
+                apiClient.get<UserWithProfile[]>('/admin/users?limit=5').catch(() => []),
+                apiClient.get<Project[]>('/admin/projects?limit=5').catch(() => []),
             ]);
 
             setRecentUsers(usersRes);
             setRecentProjects(projectsRes);
 
-            // Calculate stats from data
             setStats({
-                totalUsers: usersRes.length,
-                totalProjects: projectsRes.length,
+                totalUsers: statsRes.totalUsers || 0,
+                totalProjects: statsRes.totalProjects || 0,
                 activeProjects: projectsRes.filter(p => p.status === 'active').length,
-                totalTasks: 0, // Would need separate API
+                totalTasks: statsRes.totalTasks || 0,
             });
-        } catch (error) {
-            console.error('Failed to load dashboard data:', error);
+        } catch (err) {
+            console.error('Failed to load dashboard data:', err);
+            setError('Failed to load dashboard data. Check console for details.');
         } finally {
             setLoading(false);
         }
@@ -48,6 +53,12 @@ export default function DashboardPage() {
     return (
         <div className="space-y-6">
             <h1 className="text-2xl font-display font-bold text-text-main">Dashboard</h1>
+
+            {error && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                    {error}
+                </div>
+            )}
 
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -103,8 +114,7 @@ export default function DashboardPage() {
                                         <p className="font-medium text-text-main">{project.name}</p>
                                         <p className="text-sm text-text-muted">{project.courseCode || 'No course'}</p>
                                     </div>
-                                    <span className={`ml-auto px-2 py-1 text-xs rounded ${project.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                                        }`}>
+                                    <span className={`ml-auto px-2 py-1 text-xs rounded ${project.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
                                         {project.status || 'active'}
                                     </span>
                                 </li>
