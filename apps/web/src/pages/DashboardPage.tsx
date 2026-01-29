@@ -1,11 +1,7 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useSession } from '../lib/auth-client';
+
 
 export const DashboardPage: React.FC = () => {
-    const navigate = useNavigate();
-    const { data: session } = useSession();
-    const user = session?.user;
 
     return (
         <div className="flex-1 min-h-full py-10 px-20 flex flex-col items-start gap-8 relative overflow-hidden">
