@@ -1,18 +1,124 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProjects } from '../hooks/useProjects';
 import { useAllTasks } from '../hooks/useTasks';
 
+type BreathingPhase = 'Inhale' | 'Hold' | 'Exhale' | 'Hold Empty';
+
+interface BreathingMethod {
+    name: string;
+    description: string;
+    phases: { phase: BreathingPhase; duration: number; scale: number }[];
+}
+
+const BREATHING_METHODS: BreathingMethod[] = [
+    {
+        name: "4-7-8 Relax",
+        description: "Reduce anxiety & aid sleep",
+        phases: [
+            { phase: 'Inhale', duration: 4, scale: 1.5 },
+            { phase: 'Hold', duration: 7, scale: 1.5 },
+            { phase: 'Exhale', duration: 8, scale: 1.0 }
+        ]
+    },
+    {
+        name: "Box Breathing",
+        description: "Focus & calm nerves",
+        phases: [
+            { phase: 'Inhale', duration: 4, scale: 1.5 },
+            { phase: 'Hold', duration: 4, scale: 1.5 },
+            { phase: 'Exhale', duration: 4, scale: 1.0 },
+            { phase: 'Hold Empty', duration: 4, scale: 1.0 }
+        ]
+    },
+    {
+        name: "Extended Exhale",
+        description: "Slow heart rate",
+        phases: [
+            { phase: 'Inhale', duration: 3, scale: 1.5 },
+            { phase: 'Exhale', duration: 6, scale: 1.0 }
+        ]
+    },
+    {
+        name: "Belly Breathing",
+        description: "Deep relaxation",
+        phases: [
+            { phase: 'Inhale', duration: 4, scale: 1.5 },
+            { phase: 'Exhale', duration: 4, scale: 1.0 }
+        ]
+    },
+    {
+        name: "Physiological Sigh",
+        description: "Quick stress relief",
+        phases: [
+            { phase: 'Inhale', duration: 2, scale: 1.4 },
+            { phase: 'Inhale', duration: 1, scale: 1.6 }, // Double inhale
+            { phase: 'Exhale', duration: 6, scale: 1.0 }
+        ]
+    }
+];
+
 
 export const DashboardPage: React.FC = () => {
     const navigate = useNavigate();
-    const [isBreathing, setIsBreathing] = useState(false);
     const { data: projects } = useProjects();
     const { data: tasks } = useAllTasks();
 
+    // Breathing State
+    const [isBreathing, setIsBreathing] = useState(false);
+    const [selectedMethodIndex, setSelectedMethodIndex] = useState(0);
+    const [currentPhaseIndex, setCurrentPhaseIndex] = useState(0);
+    const [secondsLeft, setSecondsLeft] = useState(0); // For display
+    const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const currentMethod = BREATHING_METHODS[selectedMethodIndex];
+    const currentPhase = currentMethod.phases[currentPhaseIndex];
+
     const toggleBreathing = () => {
-        setIsBreathing(!isBreathing);
+        if (!isBreathing) {
+            // Start
+            setIsBreathing(true);
+            setCurrentPhaseIndex(0);
+            setSecondsLeft(currentMethod.phases[0].duration);
+        } else {
+            // Stop
+            setIsBreathing(false);
+            if (timerRef.current) clearTimeout(timerRef.current);
+            setCurrentPhaseIndex(0);
+        }
     };
+
+    // Breathing Loop Effect
+    useEffect(() => {
+        if (!isBreathing) return;
+
+        let startTime = Date.now();
+        let expectedDuration = currentPhase.duration * 1000;
+
+        const tick = () => {
+            const elapsed = Date.now() - startTime;
+            const remaining = Math.ceil((expectedDuration - elapsed) / 1000);
+
+            if (remaining >= 0) {
+                setSecondsLeft(remaining > 0 ? remaining : 1); // Keep showing 1 until flush
+            }
+
+            if (elapsed >= expectedDuration) {
+                // Move to next phase
+                const nextIndex = (currentPhaseIndex + 1) % currentMethod.phases.length;
+                setCurrentPhaseIndex(nextIndex);
+                // Reset timer for next phase component render will pick up new duration
+            } else {
+                timerRef.current = setTimeout(tick, 100);
+            }
+        };
+
+        timerRef.current = setTimeout(tick, 100);
+
+        return () => {
+            if (timerRef.current) clearTimeout(timerRef.current);
+        };
+    }, [isBreathing, currentPhaseIndex, currentMethod, currentPhase.duration]);
 
     // 1. Completion Stats
     const totalTasks = tasks?.length || 0;
@@ -223,22 +329,38 @@ export const DashboardPage: React.FC = () => {
 
                         <div className="w-full py-5 px-6 border-b border-white/20 flex justify-between items-center z-10">
                             <div className="flex items-center gap-2">
-                                <div className="flex flex-col">
-                                    <div className="w-6 h-7 relative">
-                                        <div className="w-[18px] h-4 absolute left-[3px] top-[6px] bg-white"></div>
-                                    </div>
-                                </div>
-                                <h3 className="text-white text-lg font-bold leading-7 font-display">Breathing Timer</h3>
+                                <span className="material-symbols-outlined text-white">self_improvement</span>
+                                <select
+                                    className="bg-transparent text-white text-lg font-bold leading-7 font-display focus:outline-none cursor-pointer appearance-none hover:text-orange-300 transition-colors w-32"
+                                    value={selectedMethodIndex}
+                                    onChange={(e) => {
+                                        setIsBreathing(false);
+                                        setSelectedMethodIndex(Number(e.target.value));
+                                    }}
+                                >
+                                    {BREATHING_METHODS.map((m, i) => (
+                                        <option key={i} value={i} className="text-black bg-white">{m.name}</option>
+                                    ))}
+                                </select>
+                                <span className="material-symbols-outlined text-white/50 text-sm pointer-events-none -ml-1">arrow_drop_down</span>
                             </div>
-                            <div className="py-1 px-3 bg-white/20 rounded-full flex justify-center items-start">
-                                <span className="text-white text-xs font-medium leading-4 font-display mr-1">{isBreathing ? 'Active' : '1 min'}</span>
+                            <div className="whitespace-nowrap py-1 px-3 bg-white/20 rounded-full flex justify-center items-start">
+                                <span className="text-white text-xs font-medium leading-4 font-display mr-1">
+                                    {isBreathing ? `${currentPhase.phase} ${secondsLeft}s` : ~~(BREATHING_METHODS[selectedMethodIndex].phases.reduce((a, b) => a + b.duration, 0)) + 's cycle'}
+                                </span>
                             </div>
                         </div>
 
                         <div className="flex-1 relative w-full z-10 flex flex-col items-center justify-center pt-6 pb-2">
                             {/* Sun/Timer Graphic */}
-                            <div className={`w-32 h-32 relative flex justify-center items-center mb-8 transition-transform duration-1000 ${isBreathing ? 'scale-125' : 'group-hover:scale-105'}`}>
-                                <div className={`w-20 h-20 bg-[#FFD700] shadow-[0_0_40px_rgba(255,215,0,0.6)] rounded-full flex justify-center items-center z-20 ${isBreathing ? 'animate-breathe' : 'animate-pulse'}`}>
+                            <div
+                                className="w-32 h-32 relative flex justify-center items-center mb-8"
+                                style={{
+                                    transform: `scale(${isBreathing ? currentPhase.scale : 1})`,
+                                    transition: isBreathing ? `transform ${currentPhase.duration}s linear` : 'transform 0.5s ease-out'
+                                }}
+                            >
+                                <div className={`w-20 h-20 bg-[#FFD700] shadow-[0_0_40px_rgba(255,215,0,0.6)] rounded-full flex justify-center items-center z-20`}>
                                     <div className="w-[30px] h-[36px] relative">
                                         <div className="w-[27px] h-[27px] absolute left-[1px] top-[4px] bg-orange-600 rounded-full"></div>
                                     </div>
@@ -248,12 +370,12 @@ export const DashboardPage: React.FC = () => {
                                 </div>
                             </div>
 
-                            <div className="flex flex-col items-center gap-1 mb-6">
-                                <h3 className="text-center text-white text-lg font-bold leading-7 font-display">
-                                    {isBreathing ? 'Breathe in... Breathe out...' : 'Ready to relax?'}
+                            <div className="flex flex-col items-center gap-1 mb-6 min-h-[50px]">
+                                <h3 className="text-center text-white text-lg font-bold leading-7 font-display transition-all duration-300">
+                                    {isBreathing ? currentPhase.phase : 'Ready?'}
                                 </h3>
-                                <p className="text-center text-white/80 text-sm font-normal leading-5 font-display">
-                                    {isBreathing ? 'Follow the rhythm.' : 'Take a moment to center yourself.'}
+                                <p className="text-center text-white/80 text-sm font-normal leading-5 font-display px-4">
+                                    {isBreathing ? currentMethod.description : currentMethod.description}
                                 </p>
                             </div>
 
