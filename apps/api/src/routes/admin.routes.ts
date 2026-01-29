@@ -1,10 +1,9 @@
 import { Router, Request, Response } from 'express';
 import { db } from '../config/db.js';
 import { user } from '../db/schema/auth.schema.js';
-import { userProfiles } from '../db/schema/users.schema.js';
 import { projects } from '../db/schema/projects.schema.js';
 import { tasks } from '../db/schema/tasks.schema.js';
-import { eq, desc, count } from 'drizzle-orm';
+import { eq, desc, count, sql } from 'drizzle-orm';
 
 const router = Router();
 
@@ -34,7 +33,7 @@ router.get('/users', async (req: Request, res: Response) => {
     try {
         const limit = parseInt(req.query.limit as string) || 100;
 
-        // Get all users first
+        // Get all users - only select columns that definitely exist
         const users = await db.select({
             id: user.id,
             name: user.name,
@@ -48,13 +47,32 @@ router.get('/users', async (req: Request, res: Response) => {
             .orderBy(desc(user.createdAt))
             .limit(limit);
 
-        // Get profiles for all users
-        const profiles = await db.select().from(userProfiles);
-        const profileMap = new Map(profiles.map(p => [p.userId, p]));
+        // Try to get profiles, but handle case where table might be missing columns
+        let profiles: any[] = [];
+        try {
+            // Use raw SQL to only select columns that exist
+            const profilesResult = await db.execute(sql`
+                SELECT user_id, display_name, avatar_url, role, timezone, created_at, updated_at
+                FROM user_profiles
+            `);
+            profiles = profilesResult.rows as any[];
+        } catch (profileError: any) {
+            console.warn('Could not fetch profiles:', profileError.message);
+        }
+
+        const profileMap = new Map(profiles.map((p: any) => [p.user_id, {
+            userId: p.user_id,
+            displayName: p.display_name,
+            avatarUrl: p.avatar_url,
+            role: p.role || 'student',
+            timezone: p.timezone,
+            createdAt: p.created_at,
+            updatedAt: p.updated_at,
+        }]));
 
         const usersWithProfiles = users.map(u => ({
             ...u,
-            profile: profileMap.get(u.id) || null,
+            profile: profileMap.get(u.id) || { role: 'student' },
         }));
 
         res.json(usersWithProfiles);
@@ -77,9 +95,12 @@ router.patch('/users/:userId/role', async (req: Request, res: Response) => {
             return res.status(400).json({ error: 'Invalid role' });
         }
 
-        await db.update(userProfiles)
-            .set({ role, updatedAt: new Date() })
-            .where(eq(userProfiles.userId, userId));
+        // Use raw SQL to avoid schema mismatch
+        await db.execute(sql`
+            UPDATE user_profiles 
+            SET role = ${role}, updated_at = NOW()
+            WHERE user_id = ${userId}
+        `);
 
         res.json({ success: true });
     } catch (error: any) {
