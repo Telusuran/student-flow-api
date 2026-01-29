@@ -77,7 +77,7 @@ export function useRenameResource() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: ({ id, name, projectId }: { id: string; name: string; projectId: string }) =>
+        mutationFn: ({ id, name }: { id: string; name: string; projectId: string }) =>
             resourcesService.rename(id, name),
         onSuccess: (_, { projectId }) => {
             queryClient.invalidateQueries({
@@ -94,7 +94,7 @@ export function useMoveResource() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: ({ id, parentId, projectId }: { id: string; parentId: string | null; projectId: string }) =>
+        mutationFn: ({ id, parentId }: { id: string; parentId: string | null; projectId: string }) =>
             resourcesService.move(id, parentId),
         onSuccess: (_, { projectId }) => {
             queryClient.invalidateQueries({
