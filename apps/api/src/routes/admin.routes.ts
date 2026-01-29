@@ -8,25 +8,6 @@ import { eq, desc, count } from 'drizzle-orm';
 
 const router = Router();
 
-// Middleware to check if user is admin (basic check - should be enhanced)
-const requireAdmin = async (req: Request, res: Response, next: Function) => {
-    const userId = (req as Request & { userId?: string }).userId;
-    if (!userId) {
-        return res.status(401).json({ error: 'Unauthorized' });
-    }
-
-    const profile = await db.select()
-        .from(userProfiles)
-        .where(eq(userProfiles.userId, userId))
-        .limit(1);
-
-    if (!profile[0] || profile[0].role !== 'admin') {
-        return res.status(403).json({ error: 'Admin access required' });
-    }
-
-    next();
-};
-
 // GET /api/admin/stats - Get dashboard statistics
 router.get('/stats', async (req: Request, res: Response) => {
     try {
@@ -35,13 +16,16 @@ router.get('/stats', async (req: Request, res: Response) => {
         const [tasksCount] = await db.select({ count: count() }).from(tasks);
 
         res.json({
-            totalUsers: usersCount.count,
-            totalProjects: projectsCount.count,
-            totalTasks: tasksCount.count,
+            totalUsers: Number(usersCount?.count || 0),
+            totalProjects: Number(projectsCount?.count || 0),
+            totalTasks: Number(tasksCount?.count || 0),
         });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Failed to get stats:', error);
-        res.status(500).json({ error: 'Failed to get statistics' });
+        res.status(500).json({
+            error: 'Failed to get statistics',
+            message: error?.message || 'Unknown error'
+        });
     }
 });
 
@@ -50,6 +34,7 @@ router.get('/users', async (req: Request, res: Response) => {
     try {
         const limit = parseInt(req.query.limit as string) || 100;
 
+        // Get all users first
         const users = await db.select({
             id: user.id,
             name: user.name,
@@ -73,9 +58,12 @@ router.get('/users', async (req: Request, res: Response) => {
         }));
 
         res.json(usersWithProfiles);
-    } catch (error) {
+    } catch (error: any) {
         console.error('Failed to get users:', error);
-        res.status(500).json({ error: 'Failed to get users' });
+        res.status(500).json({
+            error: 'Failed to get users',
+            message: error?.message || 'Unknown error'
+        });
     }
 });
 
@@ -94,9 +82,12 @@ router.patch('/users/:userId/role', async (req: Request, res: Response) => {
             .where(eq(userProfiles.userId, userId));
 
         res.json({ success: true });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Failed to update user role:', error);
-        res.status(500).json({ error: 'Failed to update user role' });
+        res.status(500).json({
+            error: 'Failed to update user role',
+            message: error?.message || 'Unknown error'
+        });
     }
 });
 
@@ -111,9 +102,12 @@ router.get('/projects', async (req: Request, res: Response) => {
             .limit(limit);
 
         res.json(allProjects);
-    } catch (error) {
+    } catch (error: any) {
         console.error('Failed to get projects:', error);
-        res.status(500).json({ error: 'Failed to get projects' });
+        res.status(500).json({
+            error: 'Failed to get projects',
+            message: error?.message || 'Unknown error'
+        });
     }
 });
 
@@ -128,9 +122,12 @@ router.patch('/projects/:projectId', async (req: Request, res: Response) => {
             .where(eq(projects.id, projectId));
 
         res.json({ success: true });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Failed to update project:', error);
-        res.status(500).json({ error: 'Failed to update project' });
+        res.status(500).json({
+            error: 'Failed to update project',
+            message: error?.message || 'Unknown error'
+        });
     }
 });
 
