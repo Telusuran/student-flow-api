@@ -126,18 +126,12 @@ export const DashboardPage: React.FC = () => {
     const completionPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
     // 2. Active Project (Just pick the first one for now, or one with most recent activity if we had that)
-    const activeProject = projects?.[0]; // Simple approach: first project
-    const activeProjectTasks = tasks?.filter(t => t.projectId === activeProject?.id) || [];
-    const activeProjectTotal = activeProjectTasks.length;
-    const activeProjectCompleted = activeProjectTasks.filter(t => t.status === 'done').length;
-    const activeProjectProgress = activeProjectTotal > 0 ? Math.round((activeProjectCompleted / activeProjectTotal) * 100) : 0;
+    // calculations removed as we loop through projects now
 
     // 3. Upcoming Deadline
     // Filter tasks with due dates, sort by date, find first one in future or today
     const upcomingTasks = tasks?.filter(t => t.dueDate && t.status !== 'done')
         .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime()) || [];
-
-    const nextDeadline = upcomingTasks[0];
 
     const getDaysRemaining = (dateString: string) => {
         const today = new Date();
@@ -146,8 +140,6 @@ export const DashboardPage: React.FC = () => {
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         return diffDays;
     };
-
-    const daysRemaining = nextDeadline?.dueDate ? getDaysRemaining(nextDeadline.dueDate) : 0;
 
     return (
         <div className="flex-1 min-h-full py-10 px-20 flex flex-col items-start gap-8 relative overflow-hidden">
