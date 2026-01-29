@@ -10,6 +10,7 @@ export default function UsersPage() {
     const [roleFilter, setRoleFilter] = useState<string>('all');
     const [editingUser, setEditingUser] = useState<UserWithProfile | null>(null);
     const [editForm, setEditForm] = useState({ name: '', email: '', role: 'student' });
+    const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
 
     useEffect(() => {
         loadUsers();
@@ -58,6 +59,67 @@ export default function UsersPage() {
         }
     };
 
+    const bulkDelete = async () => {
+        if (selectedUsers.size === 0) return;
+        if (!confirm(`Are you sure you want to delete ${selectedUsers.size} users? This action cannot be undone.`)) {
+            return;
+        }
+        try {
+            await Promise.all(
+                Array.from(selectedUsers).map(userId =>
+                    apiClient.delete(`/admin/users/${userId}`)
+                )
+            );
+            setSelectedUsers(new Set());
+            loadUsers();
+        } catch (err) {
+            console.error('Failed to delete users:', err);
+            alert('Failed to delete some users');
+        }
+    };
+
+    const toggleSelectUser = (userId: string) => {
+        const newSelected = new Set(selectedUsers);
+        if (newSelected.has(userId)) {
+            newSelected.delete(userId);
+        } else {
+            newSelected.add(userId);
+        }
+        setSelectedUsers(newSelected);
+    };
+
+    const toggleSelectAll = () => {
+        if (selectedUsers.size === filteredUsers.length) {
+            setSelectedUsers(new Set());
+        } else {
+            setSelectedUsers(new Set(filteredUsers.map(u => u.id)));
+        }
+    };
+
+    const exportToCSV = () => {
+        const headers = ['ID', 'Name', 'Email', 'Role', 'Joined'];
+        const rows = filteredUsers.map(user => [
+            user.id,
+            user.name || '',
+            user.email || '',
+            user.profile?.role || 'student',
+            user.createdAt ? new Date(user.createdAt).toLocaleDateString() : ''
+        ]);
+
+        const csvContent = [
+            headers.join(','),
+            ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+        ].join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `users-export-${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
     const startEdit = (user: UserWithProfile) => {
         setEditingUser(user);
         setEditForm({
@@ -91,7 +153,15 @@ export default function UsersPage() {
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h1 className="text-2xl font-display font-bold text-text-main">User Management</h1>
-                <span className="text-text-muted">{users.length} users total</span>
+                <div className="flex items-center gap-2">
+                    <span className="text-text-muted">{users.length} users total</span>
+                    <button
+                        onClick={exportToCSV}
+                        className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg flex items-center gap-1"
+                    >
+                        📥 Export CSV
+                    </button>
+                </div>
             </div>
 
             {error && (
@@ -100,8 +170,8 @@ export default function UsersPage() {
                 </div>
             )}
 
-            {/* Filters */}
-            <div className="flex gap-4 flex-wrap">
+            {/* Filters and Bulk Actions */}
+            <div className="flex gap-4 flex-wrap items-center">
                 <input
                     type="text"
                     placeholder="Search users..."
@@ -119,6 +189,18 @@ export default function UsersPage() {
                     <option value="mentor">Mentors</option>
                     <option value="admin">Admins</option>
                 </select>
+
+                {selectedUsers.size > 0 && (
+                    <div className="flex items-center gap-2 ml-auto">
+                        <span className="text-sm text-text-muted">{selectedUsers.size} selected</span>
+                        <button
+                            onClick={bulkDelete}
+                            className="px-3 py-1.5 text-sm bg-red-100 text-red-700 hover:bg-red-200 rounded-lg"
+                        >
+                            Delete Selected
+                        </button>
+                    </div>
+                )}
             </div>
 
             {/* Users Table */}
@@ -126,6 +208,14 @@ export default function UsersPage() {
                 <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                         <tr>
+                            <th className="px-4 py-3 text-left">
+                                <input
+                                    type="checkbox"
+                                    checked={selectedUsers.size === filteredUsers.length && filteredUsers.length > 0}
+                                    onChange={toggleSelectAll}
+                                    className="rounded border-gray-300"
+                                />
+                            </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
@@ -135,7 +225,15 @@ export default function UsersPage() {
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                         {filteredUsers.map(user => (
-                            <tr key={user.id} className="hover:bg-gray-50">
+                            <tr key={user.id} className={`hover:bg-gray-50 ${selectedUsers.has(user.id) ? 'bg-primary/5' : ''}`}>
+                                <td className="px-4 py-4">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedUsers.has(user.id)}
+                                        onChange={() => toggleSelectUser(user.id)}
+                                        className="rounded border-gray-300"
+                                    />
+                                </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="flex items-center">
                                         <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center text-primary font-bold">
