@@ -1,13 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useParams, useLocation } from 'react-router-dom';
-import { useResources, useDeleteResource, useCreateResource, useUploadResource } from '../hooks/useResources';
+import { Link, useParams, useLocation, useSearchParams } from 'react-router-dom';
+import {
+    useResourcesInFolder,
+    useDeleteResource,
+    useCreateResource,
+    useUploadResource,
+    useCreateFolder,
+    useRenameResource
+} from '../hooks/useResources';
 import { useProject } from '../hooks/useProjects';
+import type { Resource } from '../lib/api/types';
 
 export const ResourceManagementPage: React.FC = () => {
     const { projectId } = useParams<{ projectId: string }>();
     const location = useLocation();
-    const [filter, setFilter] = useState('All Resources');
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    // Folder navigation state
+    const currentFolderId = searchParams.get('folder') || null;
+    const [folderPath, setFolderPath] = useState<{ id: string | null; name: string }[]>([
+        { id: null, name: 'Root' }
+    ]);
+
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isCreateFolderModalOpen, setIsCreateFolderModalOpen] = useState(false);
+    const [newFolderName, setNewFolderName] = useState('');
 
     // Form State
     const [newResourceName, setNewResourceName] = useState('');
@@ -17,11 +34,18 @@ export const ResourceManagementPage: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'link' | 'upload'>('link');
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-    const { data: resources, isLoading } = useResources(projectId || '');
+    // Context menu state
+    const [contextMenu, setContextMenu] = useState<{ x: number; y: number; resource: Resource } | null>(null);
+    const [renameMode, setRenameMode] = useState<string | null>(null);
+    const [renameValue, setRenameValue] = useState('');
+
+    const { data: resources, isLoading } = useResourcesInFolder(projectId || '', currentFolderId);
     const { data: project } = useProject(projectId || '');
     const deleteResource = useDeleteResource();
     const createResource = useCreateResource();
     const uploadResource = useUploadResource();
+    const createFolder = useCreateFolder();
+    const renameResource = useRenameResource();
 
     // Auto-open upload modal if navigated from dashboard
     useEffect(() => {
@@ -29,15 +53,63 @@ export const ResourceManagementPage: React.FC = () => {
         if (state?.openUpload) {
             setIsAddModalOpen(true);
             setActiveTab('upload');
-            // Clear the state to prevent reopening on refresh
             window.history.replaceState({}, document.title);
         }
     }, [location]);
 
+    // Close context menu on click outside
+    useEffect(() => {
+        const handleClick = () => setContextMenu(null);
+        document.addEventListener('click', handleClick);
+        return () => document.removeEventListener('click', handleClick);
+    }, []);
+
+    const navigateToFolder = (folderId: string | null, folderName: string) => {
+        if (folderId) {
+            setSearchParams({ folder: folderId });
+            setFolderPath(prev => [...prev, { id: folderId, name: folderName }]);
+        } else {
+            setSearchParams({});
+            setFolderPath([{ id: null, name: 'Root' }]);
+        }
+    };
+
+    const navigateToBreadcrumb = (index: number) => {
+        const target = folderPath[index];
+        if (target.id) {
+            setSearchParams({ folder: target.id });
+        } else {
+            setSearchParams({});
+        }
+        setFolderPath(prev => prev.slice(0, index + 1));
+    };
+
     const handleDelete = (id: string) => {
-        if (confirm('Are you sure you want to remove this resource?')) {
+        if (confirm('Are you sure you want to delete this item?')) {
             deleteResource.mutate({ id, projectId: projectId! });
         }
+    };
+
+    const handleCreateFolder = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!projectId || !newFolderName.trim()) return;
+
+        createFolder.mutate({ projectId, name: newFolderName, parentId: currentFolderId }, {
+            onSuccess: () => {
+                setIsCreateFolderModalOpen(false);
+                setNewFolderName('');
+            }
+        });
+    };
+
+    const handleRename = (id: string) => {
+        if (!renameValue.trim() || !projectId) return;
+        renameResource.mutate({ id, name: renameValue, projectId }, {
+            onSuccess: () => {
+                setRenameMode(null);
+                setRenameValue('');
+            }
+        });
     };
 
     const handleAdd = (e: React.FormEvent) => {
@@ -46,7 +118,7 @@ export const ResourceManagementPage: React.FC = () => {
 
         if (activeTab === 'upload') {
             if (!selectedFile) return;
-            uploadResource.mutate({ projectId, file: selectedFile }, {
+            uploadResource.mutate({ projectId, file: selectedFile, parentId: currentFolderId }, {
                 onSuccess: () => {
                     setIsAddModalOpen(false);
                     setSelectedFile(null);
@@ -55,6 +127,7 @@ export const ResourceManagementPage: React.FC = () => {
         } else {
             createResource.mutate({
                 projectId,
+                parentId: currentFolderId,
                 name: newResourceName,
                 url: newResourceUrl,
                 type: newResourceType,
@@ -70,15 +143,37 @@ export const ResourceManagementPage: React.FC = () => {
         }
     };
 
+    const handleContextMenu = (e: React.MouseEvent, resource: Resource) => {
+        e.preventDefault();
+        setContextMenu({ x: e.clientX, y: e.clientY, resource });
+    };
+
+    const formatFileSize = (bytes: string | null) => {
+        if (!bytes) return '';
+        const size = parseInt(bytes);
+        if (size < 1024) return `${size} B`;
+        if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} KB`;
+        return `${(size / 1024 / 1024).toFixed(1)} MB`;
+    };
+
+    const getFileIcon = (resource: Resource) => {
+        if (resource.isFolder) return 'folder';
+        const type = resource.fileType?.toLowerCase() || '';
+        if (type.includes('pdf')) return 'picture_as_pdf';
+        if (type.includes('image')) return 'image';
+        if (type.includes('video')) return 'video_file';
+        if (type.includes('audio')) return 'audio_file';
+        if (type.includes('sheet') || type.includes('excel')) return 'table_chart';
+        if (type.includes('document') || type.includes('word')) return 'article';
+        if (type.includes('presentation') || type.includes('powerpoint')) return 'slideshow';
+        return 'description';
+    };
+
     if (isLoading) return <div className="p-8 text-center">Loading resources...</div>;
     if (!project) return <div className="p-8 text-center">Project not found</div>;
 
-    const filteredResources = resources?.filter(r => {
-        if (filter === 'All Resources') return true;
-        if (filter === 'Linked Files') return r.type === 'linked_file';
-        if (filter === 'External Tools') return r.type === 'external_tool';
-        return true;
-    }) || [];
+    const folders = resources?.filter(r => r.isFolder) || [];
+    const files = resources?.filter(r => !r.isFolder) || [];
 
     return (
         <div className="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -109,111 +204,233 @@ export const ResourceManagementPage: React.FC = () => {
             </nav>
 
             {/* Page Header */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
                 <div className="flex flex-col gap-2">
-                    <h1 className="text-3xl md:text-4xl font-black text-text-main dark:text-white tracking-tight">Resource Management</h1>
+                    <h1 className="text-3xl md:text-4xl font-black text-text-main dark:text-white tracking-tight">File Explorer</h1>
                     <p className="text-text-sub dark:text-gray-400 max-w-2xl">
-                        Centralize your project assets. Link cloud files, external tools, and reference materials.
+                        Manage your project files and folders. Upload, organize, and access resources easily.
                     </p>
                 </div>
-                <button
-                    onClick={() => setIsAddModalOpen(true)}
-                    className="flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-[#181611] font-bold py-2.5 px-5 rounded-lg shadow-soft transition-all transform hover:-translate-y-0.5 active:translate-y-0"
-                >
-                    <span className="material-symbols-outlined text-[20px]">add_link</span>
-                    Add Resource
-                </button>
-            </div>
-
-            {/* Filter & View Controls */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 border-b border-gray-200 dark:border-gray-700 pb-2">
-                <div className="flex items-center gap-6 w-full sm:w-auto overflow-x-auto no-scrollbar">
-                    {['All Resources', 'Linked Files', 'External Tools'].map(f => (
-                        <button
-                            key={f}
-                            className={`group flex items-center gap-2 pb-2 border-b-2 font-bold whitespace-nowrap transition-colors ${filter === f ? 'border-primary text-text-main dark:text-white' : 'border-transparent hover:border-gray-300 text-text-sub dark:text-gray-400 hover:text-text-main'}`}
-                            onClick={() => setFilter(f)}
-                        >
-                            <span className={`material-symbols-outlined text-[20px] ${filter === f ? 'icon-filled' : ''}`}>grid_view</span>
-                            {f}
-                            <span className="bg-gray-100 dark:bg-gray-800 text-xs py-0.5 px-2 rounded-full text-text-sub ml-1">
-                                {f === 'All Resources' ? resources?.length : resources?.filter(r =>
-                                    f === 'Linked Files' ? r.type === 'linked_file' : r.type === 'external_tool'
-                                ).length}
-                            </span>
-                        </button>
-                    ))}
+                <div className="flex gap-2">
+                    <button
+                        onClick={() => setIsCreateFolderModalOpen(true)}
+                        className="flex items-center justify-center gap-2 bg-gray-100 dark:bg-neutral-700 hover:bg-gray-200 dark:hover:bg-neutral-600 text-text-main dark:text-white font-bold py-2.5 px-4 rounded-lg transition-all"
+                    >
+                        <span className="material-symbols-outlined text-[20px]">create_new_folder</span>
+                        New Folder
+                    </button>
+                    <button
+                        onClick={() => setIsAddModalOpen(true)}
+                        className="flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-[#181611] font-bold py-2.5 px-5 rounded-lg shadow-soft transition-all transform hover:-translate-y-0.5 active:translate-y-0"
+                    >
+                        <span className="material-symbols-outlined text-[20px]">upload_file</span>
+                        Upload
+                    </button>
                 </div>
             </div>
 
-            {/* Resources Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {filteredResources.map(resource => (
-                    <div key={resource.id} className="group relative flex flex-col bg-card-light dark:bg-card-dark rounded-xl p-4 shadow-card hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border border-transparent hover:border-primary/20">
-                        <div className="relative h-40 w-full rounded-lg bg-gray-200 overflow-hidden mb-4 group-hover:ring-2 ring-primary/20 transition-all">
-                            {resource.thumbnailUrl ? (
-                                <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url('${resource.thumbnailUrl}')` }}></div>
-                            ) : (
-                                <div className="absolute inset-0 flex items-center justify-center bg-gray-100 text-gray-400">
-                                    <span className="material-symbols-outlined text-4xl">
-                                        {resource.type === 'linked_file' ? 'description' : 'extension'}
-                                    </span>
-                                </div>
-                            )}
-                            <div className={`absolute bottom-2 left-2 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm flex items-center gap-1 ${resource.type === 'external_tool' ? 'bg-blue-600' : 'bg-red-500'}`}>
-                                <span className="material-symbols-outlined text-[12px]">
-                                    {resource.type === 'external_tool' ? 'link' : 'picture_as_pdf'}
-                                </span>
-                                {resource.type === 'external_tool' ? 'Tool' : 'File'}
-                            </div>
-                        </div>
-                        <div className="flex-1 flex flex-col">
-                            <div className="flex justify-between items-start mb-1">
-                                <h3 className="font-bold text-text-main dark:text-white text-lg leading-tight line-clamp-2">{resource.name}</h3>
-                            </div>
-                            <p className="text-xs text-text-sub dark:text-gray-400 mb-4 flex items-center gap-1">
-                                <span className="material-symbols-outlined text-[14px]">calendar_today</span> Added {new Date(resource.createdAt).toLocaleDateString()}
-                            </p>
-                            <div className="mt-auto flex items-center justify-between border-t border-gray-200 dark:border-gray-600 pt-3">
-                                <div className="flex gap-2">
-                                    <button
-                                        onClick={() => resource.url && window.open(resource.url, '_blank')}
-                                        className="text-text-sub hover:text-primary transition-colors"
-                                        title="Open"
-                                    >
-                                        <span className="material-symbols-outlined text-[18px]">open_in_new</span>
-                                    </button>
-                                    <button
-                                        onClick={() => handleDelete(resource.id)}
-                                        className="text-text-sub hover:text-red-500 transition-colors"
-                                        title="Remove"
-                                    >
-                                        <span className="material-symbols-outlined text-[18px]">delete</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            {/* Folder Path Breadcrumbs */}
+            <div className="flex items-center gap-2 mb-6 p-3 bg-gray-50 dark:bg-neutral-800 rounded-lg overflow-x-auto">
+                {folderPath.map((folder, index) => (
+                    <React.Fragment key={folder.id || 'root'}>
+                        {index > 0 && (
+                            <span className="material-symbols-outlined text-gray-400 text-[16px]">chevron_right</span>
+                        )}
+                        <button
+                            onClick={() => navigateToBreadcrumb(index)}
+                            className={`flex items-center gap-1 px-2 py-1 rounded hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors ${index === folderPath.length - 1
+                                ? 'text-primary font-semibold'
+                                : 'text-text-sub dark:text-gray-400'
+                                }`}
+                        >
+                            <span className="material-symbols-outlined text-[18px]">
+                                {index === 0 ? 'folder_special' : 'folder'}
+                            </span>
+                            {folder.name}
+                        </button>
+                    </React.Fragment>
                 ))}
-
-                {/* Add New Placeholder */}
-                <button
-                    onClick={() => setIsAddModalOpen(true)}
-                    className="group flex flex-col items-center justify-center bg-card-light/50 dark:bg-card-dark/50 rounded-xl p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-primary hover:bg-card-light dark:hover:bg-card-dark transition-all duration-300 min-h-[300px]"
-                >
-                    <div className="w-16 h-16 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform">
-                        <span className="material-symbols-outlined text-primary text-[32px]">add</span>
-                    </div>
-                    <h3 className="font-bold text-text-sub dark:text-gray-400 text-lg group-hover:text-primary transition-colors">Link New Resource</h3>
-                </button>
             </div>
+
+            {/* Folders Section */}
+            {folders.length > 0 && (
+                <div className="mb-8">
+                    <h2 className="text-sm font-semibold text-text-sub dark:text-gray-400 uppercase tracking-wider mb-4">Folders</h2>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                        {folders.map(folder => (
+                            <div
+                                key={folder.id}
+                                onDoubleClick={() => navigateToFolder(folder.id, folder.name)}
+                                onContextMenu={(e) => handleContextMenu(e, folder)}
+                                className="group flex flex-col items-center p-4 bg-card-light dark:bg-card-dark rounded-xl border border-transparent hover:border-primary/20 hover:shadow-lg transition-all cursor-pointer"
+                            >
+                                {renameMode === folder.id ? (
+                                    <input
+                                        type="text"
+                                        value={renameValue}
+                                        onChange={(e) => setRenameValue(e.target.value)}
+                                        onBlur={() => handleRename(folder.id)}
+                                        onKeyDown={(e) => e.key === 'Enter' && handleRename(folder.id)}
+                                        className="w-full text-center text-sm bg-transparent border-b border-primary focus:outline-none"
+                                        autoFocus
+                                    />
+                                ) : (
+                                    <>
+                                        <span className="material-symbols-outlined text-5xl text-amber-500 mb-2 icon-filled">folder</span>
+                                        <span className="text-sm font-medium text-center text-text-main dark:text-white truncate w-full">{folder.name}</span>
+                                    </>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Files Section */}
+            <div>
+                <h2 className="text-sm font-semibold text-text-sub dark:text-gray-400 uppercase tracking-wider mb-4">Files</h2>
+                {files.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-16 text-center">
+                        <span className="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 mb-4">folder_open</span>
+                        <p className="text-text-sub dark:text-gray-400 mb-4">This folder is empty</p>
+                        <button
+                            onClick={() => setIsAddModalOpen(true)}
+                            className="text-primary hover:underline font-medium"
+                        >
+                            Upload your first file
+                        </button>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                        {files.map(file => (
+                            <div
+                                key={file.id}
+                                onContextMenu={(e) => handleContextMenu(e, file)}
+                                className="group flex flex-col items-center p-4 bg-card-light dark:bg-card-dark rounded-xl border border-transparent hover:border-primary/20 hover:shadow-lg transition-all cursor-pointer"
+                            >
+                                {renameMode === file.id ? (
+                                    <input
+                                        type="text"
+                                        value={renameValue}
+                                        onChange={(e) => setRenameValue(e.target.value)}
+                                        onBlur={() => handleRename(file.id)}
+                                        onKeyDown={(e) => e.key === 'Enter' && handleRename(file.id)}
+                                        className="w-full text-center text-sm bg-transparent border-b border-primary focus:outline-none"
+                                        autoFocus
+                                    />
+                                ) : (
+                                    <>
+                                        <div className="relative mb-2">
+                                            <span className={`material-symbols-outlined text-5xl ${file.fileType?.includes('pdf') ? 'text-red-500' :
+                                                file.fileType?.includes('image') ? 'text-green-500' :
+                                                    file.fileType?.includes('video') ? 'text-purple-500' :
+                                                        'text-blue-500'
+                                                }`}>
+                                                {getFileIcon(file)}
+                                            </span>
+                                        </div>
+                                        <span className="text-sm font-medium text-center text-text-main dark:text-white truncate w-full" title={file.name}>
+                                            {file.name}
+                                        </span>
+                                        <span className="text-xs text-text-sub dark:text-gray-400 mt-1">
+                                            {formatFileSize(file.fileSize)}
+                                        </span>
+                                    </>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            {/* Context Menu */}
+            {contextMenu && (
+                <div
+                    className="fixed z-50 bg-white dark:bg-neutral-800 rounded-lg shadow-xl border border-gray-200 dark:border-neutral-700 py-2 min-w-[160px]"
+                    style={{ left: contextMenu.x, top: contextMenu.y }}
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    {!contextMenu.resource.isFolder && contextMenu.resource.url && (
+                        <button
+                            onClick={() => {
+                                window.open(contextMenu.resource.url!, '_blank');
+                                setContextMenu(null);
+                            }}
+                            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-main dark:text-white hover:bg-gray-100 dark:hover:bg-neutral-700"
+                        >
+                            <span className="material-symbols-outlined text-[18px]">open_in_new</span>
+                            Open
+                        </button>
+                    )}
+                    <button
+                        onClick={() => {
+                            setRenameMode(contextMenu.resource.id);
+                            setRenameValue(contextMenu.resource.name);
+                            setContextMenu(null);
+                        }}
+                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-text-main dark:text-white hover:bg-gray-100 dark:hover:bg-neutral-700"
+                    >
+                        <span className="material-symbols-outlined text-[18px]">edit</span>
+                        Rename
+                    </button>
+                    <button
+                        onClick={() => {
+                            handleDelete(contextMenu.resource.id);
+                            setContextMenu(null);
+                        }}
+                        className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-500 hover:bg-gray-100 dark:hover:bg-neutral-700"
+                    >
+                        <span className="material-symbols-outlined text-[18px]">delete</span>
+                        Delete
+                    </button>
+                </div>
+            )}
+
+            {/* Create Folder Modal */}
+            {isCreateFolderModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                    <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-xl w-full max-w-sm overflow-hidden">
+                        <form onSubmit={handleCreateFolder} className="p-6">
+                            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">New Folder</h3>
+                            <input
+                                type="text"
+                                value={newFolderName}
+                                onChange={(e) => setNewFolderName(e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary dark:bg-neutral-700 dark:text-white mb-4"
+                                placeholder="Folder name"
+                                autoFocus
+                                required
+                            />
+                            <div className="flex justify-end gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setIsCreateFolderModalOpen(false);
+                                        setNewFolderName('');
+                                    }}
+                                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors dark:bg-neutral-700 dark:text-white dark:hover:bg-neutral-600"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={createFolder.isPending}
+                                    className="px-4 py-2 text-sm font-bold text-white bg-primary hover:bg-primary-hover rounded-lg shadow-sm transition-all disabled:opacity-50"
+                                >
+                                    Create
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
 
             {/* Add Resource Modal */}
             {isAddModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
                     <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-xl w-full max-w-md overflow-hidden transform transition-all scale-100">
                         <div className="p-6">
-                            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Add New Resource</h3>
+                            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Add Resource</h3>
 
                             {/* Tabs */}
                             <div className="flex gap-2 mb-4 p-1 bg-gray-100 dark:bg-neutral-700 rounded-lg">

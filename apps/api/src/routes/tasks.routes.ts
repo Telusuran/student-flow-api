@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { authMiddleware } from '../middleware/auth.middleware.js';
 import { tasksService } from '../services/tasks.service.js';
+import { upload } from '../config/multer.js';
 
 const router = Router();
 
@@ -162,12 +163,27 @@ router.get('/tasks/:id/attachments', async (req, res, next) => {
 });
 
 // POST /api/tasks/:id/attachments - Add attachment
-router.post('/tasks/:id/attachments', async (req, res, next) => {
+router.post('/tasks/:id/attachments', upload.single('file'), async (req, res, next) => {
     try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
+
+        // Need to import storageService dynamically or move logic
+        // Assuming we can import it at the top if not circular, but keeping pattern
+        const { storageService } = await import('../services/storage.service.js');
+
+        const url = await storageService.upload(req.file, 'attachments'); // Upload to 'attachments' folder
+
         const attachment = await tasksService.addAttachment(
             req.params.id,
             req.user!.id,
-            req.body
+            {
+                name: req.file.originalname,
+                url: url,
+                type: req.file.mimetype,
+                size: req.file.size
+            }
         );
         res.status(201).json(attachment);
     } catch (error) {

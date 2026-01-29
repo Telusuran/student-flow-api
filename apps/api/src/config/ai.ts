@@ -1,5 +1,5 @@
 import Groq from 'groq-sdk';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenerativeAI, Part } from '@google/generative-ai';
 
 // AI Provider Configuration
 // Primary: Groq (free, fast)
@@ -21,6 +21,15 @@ const geminiModel = genAI?.getGenerativeModel({
     generationConfig: {
         temperature: 0.7,
         maxOutputTokens: 2048,
+    },
+});
+
+// Multimodal model for file analysis
+const geminiMultimodalModel = genAI?.getGenerativeModel({
+    model: 'gemini-2.0-flash',
+    generationConfig: {
+        temperature: 0.5,
+        maxOutputTokens: 4096,
     },
 });
 
@@ -95,6 +104,53 @@ export async function generateAICompletion(options: AICompletionOptions): Promis
     throw new Error('No AI provider available');
 }
 
+// Multimodal AI completion with file (images, PDFs)
+interface AICompletionWithFileOptions {
+    prompt: string;
+    fileBuffer: Buffer;
+    mimeType: string;
+    temperature?: number;
+    maxTokens?: number;
+}
+
+export async function generateAICompletionWithFile(options: AICompletionWithFileOptions): Promise<string> {
+    const { prompt, fileBuffer, mimeType, temperature = 0.5, maxTokens = 4096 } = options;
+
+    if (!geminiMultimodalModel) {
+        throw new Error('Gemini API key required for file analysis');
+    }
+
+    try {
+        // Convert buffer to base64
+        const base64Data = fileBuffer.toString('base64');
+
+        // Create multimodal content parts
+        const imagePart: Part = {
+            inlineData: {
+                data: base64Data,
+                mimeType: mimeType,
+            },
+        };
+
+        const textPart: Part = {
+            text: prompt,
+        };
+
+        // Generate content with file
+        const result = await geminiMultimodalModel.generateContent([imagePart, textPart]);
+        let text = result.response.text();
+
+        // Clean markdown code blocks if present (assuming JSON response)
+        text = text.replace(/```json\n?|\n?```/g, '').trim();
+
+        return text;
+    } catch (error: any) {
+        console.error('Gemini multimodal API error:', error.message);
+        throw new Error('File analysis failed: ' + error.message);
+    }
+}
+
 // Export for backward compatibility
 export const geminiFlash = geminiModel;
 export const geminiPro = geminiModel;
+

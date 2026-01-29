@@ -282,6 +282,73 @@ Respond with JSON:
         }
     }
 
+    // Analyze uploaded file (PDF, Image) using multimodal AI
+    async analyzeFile(fileBuffer: Buffer, mimeType: string, fileName: string, projectId: string | null, userId: string) {
+        // Import the multimodal function
+        const { generateAICompletionWithFile } = await import('../config/ai.js');
+
+        const today = new Date().toISOString().split('T')[0];
+
+        const prompt = `You are an intelligent academic project assistant. Analyze this uploaded document/image and provide actionable insights.
+
+TODAY'S DATE: ${today}
+FILE NAME: ${fileName}
+FILE TYPE: ${mimeType}
+
+ANALYZE THE CONTENT AND PROVIDE:
+
+1. **Summary** - Brief 2-3 sentence summary of what this document is about
+2. **Key Topics** - Main subjects that need research or understanding
+3. **Suggested Tasks** - Break down the work into actionable tasks with:
+   - Clear, specific title
+   - Description of what needs to be done
+   - Priority (low/medium/high) based on importance and dependencies
+   - Estimated due date (YYYY-MM-DD format) - Calculate reasonable deadlines
+   - Category (Research, Writing, Reading, Review, Admin, Preparation)
+4. **Deadlines** - Any explicit deadlines found in the document
+5. **Key Concepts** - Important terms or ideas to understand
+
+Respond with JSON:
+{
+  "summary": "string",
+  "topics": ["string"],
+  "suggestedTasks": [{
+    "title": "string",
+    "description": "string", 
+    "priority": "low|medium|high",
+    "dueDate": "YYYY-MM-DD",
+    "category": "Research|Writing|Reading|Review|Admin|Preparation"
+  }],
+  "deadlines": [{ "date": "YYYY-MM-DD", "description": "string" }],
+  "keyConcepts": ["string"]
+}`;
+
+        try {
+            const text = await generateAICompletionWithFile({
+                prompt,
+                fileBuffer,
+                mimeType,
+                maxTokens: 4096,
+            });
+            const analysis = JSON.parse(text);
+
+            // Store analysis if projectId provided
+            if (projectId) {
+                await this.database.insert(aiSuggestions).values({
+                    projectId,
+                    userId,
+                    type: 'file_analysis',
+                    response: JSON.stringify(analysis),
+                });
+            }
+
+            return analysis;
+        } catch (error: any) {
+            console.error('File analysis failed:', error);
+            return { error: 'File analysis failed: ' + error.message };
+        }
+    }
+
     async generateInsightsReport(projectId: string, userId: string) {
         const metrics = await this.getProjectMetrics(projectId);
         const health = await this.calculateProjectHealth(projectId, userId);

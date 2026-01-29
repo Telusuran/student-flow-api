@@ -93,6 +93,40 @@ class ApiClient {
     async delete<T>(endpoint: string, options?: RequestOptions): Promise<T> {
         return this.request<T>(endpoint, { ...options, method: "DELETE" });
     }
+
+    async upload<T>(
+        endpoint: string,
+        file: File,
+        fieldName: string = 'file',
+        additionalData?: Record<string, string | Blob>
+    ): Promise<T> {
+        const formData = new FormData();
+        formData.append(fieldName, file);
+
+        if (additionalData) {
+            Object.entries(additionalData).forEach(([key, value]) => {
+                formData.append(key, value);
+            });
+        }
+
+        const url = `${this.baseUrl}/api${endpoint}`;
+
+        const response = await fetch(url, {
+            method: 'POST',
+            body: formData,
+            credentials: 'include',
+            // Do NOT set Content-Type header, browser sets it with boundary for FormData
+        });
+
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({
+                error: "Upload failed",
+            }));
+            throw new Error(error.error || error.message || "Upload failed");
+        }
+
+        return response.json();
+    }
 }
 
 export const apiClient = new ApiClient(API_BASE_URL);

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { useAnalyzeDocument } from '../hooks/useAI';
+import { useAnalyzeDocument, useAnalyzeFile } from '../hooks/useAI';
 import { useProjects } from '../hooks/useProjects';
 import { useCreateTask } from '../hooks/useTasks';
 
@@ -17,8 +17,13 @@ interface StoredAnalysis {
 export const DocumentAnalyzerPage: React.FC = () => {
     const [content, setContent] = useState('');
     const [selectedProjectId, setSelectedProjectId] = useState('');
+    const [activeTab, setActiveTab] = useState<'text' | 'file'>('text');
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [isDragOver, setIsDragOver] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const { data: projects } = useProjects();
     const analyzeDocument = useAnalyzeDocument();
+    const analyzeFile = useAnalyzeFile();
     const createTask = useCreateTask();
     const [analysis, setAnalysis] = useState<any>(null);
 
@@ -53,24 +58,46 @@ export const DocumentAnalyzerPage: React.FC = () => {
         }
     }, [analysis, content, selectedProjectId]);
 
-    const handleAnalyze = async () => {
-        if (!content.trim()) return;
-
-        try {
-            const result = await analyzeDocument.mutateAsync({
-                content,
-                projectId: selectedProjectId || undefined,
-            });
-            setAnalysis(result);
-        } catch (error) {
-            console.error('Analysis failed:', error);
-        }
-    };
-
     const handleClearAnalysis = () => {
         setAnalysis(null);
         setContent('');
+        setSelectedFile(null);
         localStorage.removeItem(STORAGE_KEY);
+    };
+
+    const handleAnalyze = async () => {
+        if (activeTab === 'file') {
+            if (!selectedFile) return;
+            try {
+                const result = await analyzeFile.mutateAsync({
+                    file: selectedFile,
+                    projectId: selectedProjectId || undefined,
+                });
+                setAnalysis(result);
+            } catch (error) {
+                console.error('File analysis failed:', error);
+            }
+        } else {
+            if (!content.trim()) return;
+            try {
+                const result = await analyzeDocument.mutateAsync({
+                    content,
+                    projectId: selectedProjectId || undefined,
+                });
+                setAnalysis(result);
+            } catch (error) {
+                console.error('Analysis failed:', error);
+            }
+        }
+    };
+
+    const handleFileDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDragOver(false);
+        const file = e.dataTransfer.files[0];
+        if (file && (file.type.startsWith('image/') || file.type === 'application/pdf')) {
+            setSelectedFile(file);
+        }
     };
 
     const handleCreateTask = async (task: {
@@ -146,10 +173,10 @@ export const DocumentAnalyzerPage: React.FC = () => {
 
                 {/* Input Section */}
                 <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {/* Text Input */}
+                    {/* Input Panel */}
                     <div className="bg-neutral-card rounded-2xl p-6 border border-secondary-accent/10 shadow-sm">
                         <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-lg font-bold text-text-main">Document Content</h2>
+                            <h2 className="text-lg font-bold text-text-main">Document Input</h2>
                             <select
                                 value={selectedProjectId}
                                 onChange={(e) => setSelectedProjectId(e.target.value)}
@@ -163,40 +190,120 @@ export const DocumentAnalyzerPage: React.FC = () => {
                                 ))}
                             </select>
                         </div>
-                        <textarea
-                            value={content}
-                            onChange={(e) => setContent(e.target.value)}
-                            placeholder="Paste your document content here... (syllabus, assignment description, research paper, project brief, etc.)"
-                            className="w-full h-80 p-4 text-sm bg-white rounded-xl border border-secondary-accent/20 focus:outline-none focus:ring-2 focus:ring-purple-500/50 resize-none"
-                        />
-                        <div className="flex items-center justify-between mt-4">
-                            <span className="text-xs text-text-muted">{content.length} characters</span>
+
+                        {/* Tabs */}
+                        <div className="flex gap-2 mb-4 p-1 bg-gray-100 rounded-lg">
                             <button
-                                onClick={handleAnalyze}
-                                disabled={!content.trim() || analyzeDocument.isPending}
-                                className="flex items-center gap-2 px-6 py-2.5 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 text-white font-bold rounded-lg shadow-md transition-all transform active:scale-95"
+                                type="button"
+                                onClick={() => setActiveTab('text')}
+                                className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === 'text'
+                                        ? 'bg-white text-purple-600 shadow-sm'
+                                        : 'text-gray-500 hover:text-gray-700'
+                                    }`}
                             >
-                                {analyzeDocument.isPending ? (
-                                    <>
-                                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                                        <span>Analyzing...</span>
-                                    </>
+                                <span className="material-symbols-outlined text-[18px]">text_snippet</span>
+                                Paste Text
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setActiveTab('file')}
+                                className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-medium rounded-md transition-colors ${activeTab === 'file'
+                                        ? 'bg-white text-purple-600 shadow-sm'
+                                        : 'text-gray-500 hover:text-gray-700'
+                                    }`}
+                            >
+                                <span className="material-symbols-outlined text-[18px]">upload_file</span>
+                                Upload File
+                            </button>
+                        </div>
+
+                        {activeTab === 'text' ? (
+                            <textarea
+                                value={content}
+                                onChange={(e) => setContent(e.target.value)}
+                                placeholder="Paste your document content here... (syllabus, assignment description, research paper, project brief, etc.)"
+                                className="w-full h-72 p-4 text-sm bg-white rounded-xl border border-secondary-accent/20 focus:outline-none focus:ring-2 focus:ring-purple-500/50 resize-none"
+                            />
+                        ) : (
+                            <div
+                                onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
+                                onDragLeave={() => setIsDragOver(false)}
+                                onDrop={handleFileDrop}
+                                onClick={() => fileInputRef.current?.click()}
+                                className={`w-full h-72 flex flex-col items-center justify-center border-2 border-dashed rounded-xl cursor-pointer transition-colors ${isDragOver
+                                        ? 'border-purple-500 bg-purple-50'
+                                        : 'border-gray-300 hover:border-purple-400 hover:bg-gray-50'
+                                    }`}
+                            >
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept="image/*,application/pdf"
+                                    onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                                    className="hidden"
+                                />
+                                {selectedFile ? (
+                                    <div className="flex flex-col items-center text-center">
+                                        <span className={`material-symbols-outlined text-5xl mb-2 ${selectedFile.type === 'application/pdf' ? 'text-red-500' : 'text-green-500'
+                                            }`}>
+                                            {selectedFile.type === 'application/pdf' ? 'picture_as_pdf' : 'image'}
+                                        </span>
+                                        <span className="text-sm font-medium text-text-main">{selectedFile.name}</span>
+                                        <span className="text-xs text-text-muted mt-1">
+                                            {(selectedFile.size / 1024 / 1024).toFixed(1)} MB
+                                        </span>
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setSelectedFile(null);
+                                            }}
+                                            className="mt-2 text-xs text-red-500 hover:text-red-600"
+                                        >
+                                            Remove file
+                                        </button>
+                                    </div>
                                 ) : (
                                     <>
-                                        <span className="material-symbols-outlined">auto_awesome</span>
-                                        <span>Analyze with AI</span>
+                                        <span className="material-symbols-outlined text-4xl text-gray-400 mb-2">cloud_upload</span>
+                                        <span className="text-sm font-medium text-gray-600">Drop PDF or image here</span>
+                                        <span className="text-xs text-gray-400 mt-1">or click to browse</span>
                                     </>
                                 )}
-                            </button>
-                            {analysis && (
+                            </div>
+                        )}
+
+                        <div className="flex items-center justify-between mt-4">
+                            <span className="text-xs text-text-muted">
+                                {activeTab === 'text' ? `${content.length} characters` : selectedFile ? 'File ready' : 'No file selected'}
+                            </span>
+                            <div className="flex gap-2">
+                                {analysis && (
+                                    <button
+                                        onClick={handleClearAnalysis}
+                                        className="flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium rounded-lg transition-all"
+                                    >
+                                        <span className="material-symbols-outlined text-[18px]">delete_sweep</span>
+                                        Clear
+                                    </button>
+                                )}
                                 <button
-                                    onClick={handleClearAnalysis}
-                                    className="flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium rounded-lg transition-all"
+                                    onClick={handleAnalyze}
+                                    disabled={(activeTab === 'text' && !content.trim()) || (activeTab === 'file' && !selectedFile) || analyzeDocument.isPending || analyzeFile.isPending}
+                                    className="flex items-center gap-2 px-6 py-2.5 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-300 text-white font-bold rounded-lg shadow-md transition-all transform active:scale-95"
                                 >
-                                    <span className="material-symbols-outlined text-[18px]">delete_sweep</span>
-                                    <span>Clear</span>
+                                    {(analyzeDocument.isPending || analyzeFile.isPending) ? (
+                                        <>
+                                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                            <span>Analyzing...</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span className="material-symbols-outlined">auto_awesome</span>
+                                            <span>Analyze with AI</span>
+                                        </>
+                                    )}
                                 </button>
-                            )}
+                            </div>
                         </div>
                     </div>
 
@@ -272,8 +379,8 @@ export const DocumentAnalyzerPage: React.FC = () => {
                                                     <h4 className="text-sm font-bold text-text-main">{task.title}</h4>
                                                     {task.priority && (
                                                         <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${task.priority === 'high' ? 'bg-red-100 text-red-600' :
-                                                                task.priority === 'medium' ? 'bg-yellow-100 text-yellow-600' :
-                                                                    'bg-green-100 text-green-600'
+                                                            task.priority === 'medium' ? 'bg-yellow-100 text-yellow-600' :
+                                                                'bg-green-100 text-green-600'
                                                             }`}>
                                                             {task.priority.toUpperCase()}
                                                         </span>

@@ -213,26 +213,32 @@ export interface ApiError {
 // Resource types
 export interface CreateResourceDTO {
     projectId: string;
+    parentId?: string | null;
+    isFolder?: boolean;
     name: string;
-    type: 'linked_file' | 'external_tool';
+    type: 'linked_file' | 'external_tool' | 'folder';
     url?: string;
     description?: string;
     source?: string;
     thumbnailUrl?: string;
     fileType?: string;
+    fileSize?: string;
     tags?: string[];
 }
 
 export interface Resource {
     id: string;
     projectId: string;
+    parentId: string | null;
+    isFolder: boolean;
     name: string;
     description: string | null;
-    type: 'linked_file' | 'external_tool';
+    type: 'linked_file' | 'external_tool' | 'folder';
     source: string | null;
     url: string | null;
     thumbnailUrl: string | null;
     fileType: string | null;
+    fileSize: string | null;
     tags: string[] | null;
     addedBy: string | null;
     createdAt: string;
@@ -243,3 +249,4 @@ export interface Resource {
         avatar?: string;
     };
 }
+

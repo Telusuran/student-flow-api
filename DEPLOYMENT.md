@@ -59,8 +59,14 @@ This guide walks you through deploying the **Student Flow** application for free
     *   `GEMINI_API_KEY`: (Your Google Gemini API Key)
     *   `BETTER_AUTH_URL`: `https://your-project-name.vercel.app` (You might need to deploy once to get the URL, then update this and redeploy).
     *   `FRONTEND_URL`: (Leave empty for now)
+    *   `BLOB_READ_WRITE_TOKEN`: (Run `npx vercel blob add` locally to get this, or add it via Vercel Storage tab)
 6.  Click **Deploy**.
-    > **Note on File Uploads**: Vercel Serverless functions are read-only. File uploads to the local `uploads/` folder **WILL NOT WORK** on Vercel. You will need to implement cloud storage (like S3 or UploadThing) later for files to work.
+7.  **File Uploads**:
+    *   We have implemented **Vercel Blob** support.
+    *   To enable it, go to your project in Vercel -> Storage.
+    *   Click "Connect Store" -> "Blob".
+    *   This will automatically add the `BLOB_READ_WRITE_TOKEN` environment variable to your project.
+    *   Once added, file uploads (like profile pictures) will work automatically!
 
 ---
 

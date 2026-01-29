@@ -5,6 +5,7 @@ import { user, userProfiles } from '../db/schema/index.js';
 interface ProfileData {
     name?: string;
     image?: string;
+    avatarUrl?: string; // Alias for image
     email?: string;
     institution?: string;
     major?: string;
@@ -77,11 +78,14 @@ export class UsersService {
 
     async update(id: string, data: ProfileData) {
         // Update user table (name, image, email)
+        // Map avatarUrl to image if provided
+        const imageUrl = data.image || data.avatarUrl;
+
         const userUpdateResult = await this.database
             .update(user)
             .set({
                 name: data.name,
-                image: data.image,
+                image: imageUrl,
                 email: data.email,
                 updatedAt: new Date(),
             })
@@ -98,7 +102,8 @@ export class UsersService {
         }
 
         // Update or insert profile data (institution, major, bio)
-        const hasProfileFields = data.institution !== undefined || data.major !== undefined || data.bio !== undefined;
+        // Also update avatar_url in user_profiles to keep it in sync
+        const hasProfileFields = data.institution !== undefined || data.major !== undefined || data.bio !== undefined || imageUrl !== undefined;
 
         if (hasProfileFields) {
             try {
@@ -115,6 +120,7 @@ export class UsersService {
                             institution: data.institution,
                             major: data.major,
                             bio: data.bio,
+                            avatarUrl: imageUrl, // Sync avatarUrl
                             updatedAt: new Date(),
                         })
                         .where(eq(userProfiles.userId, id));
@@ -127,6 +133,7 @@ export class UsersService {
                             institution: data.institution ?? null,
                             major: data.major ?? null,
                             bio: data.bio ?? null,
+                            avatarUrl: imageUrl ?? null,
                         });
                 }
             } catch (error) {

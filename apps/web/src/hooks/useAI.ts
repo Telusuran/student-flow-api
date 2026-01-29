@@ -56,12 +56,22 @@ export function useProjectReport(projectId: string) {
 }
 
 /**
- * Hook to analyze a document
+ * Hook to analyze a document (text)
  */
 export function useAnalyzeDocument() {
     return useMutation({
         mutationFn: (data: AnalyzeDocumentData) =>
             aiService.analyzeDocument(data),
+    });
+}
+
+/**
+ * Hook to analyze an uploaded file (PDF, Image)
+ */
+export function useAnalyzeFile() {
+    return useMutation({
+        mutationFn: ({ file, projectId }: { file: File; projectId?: string }) =>
+            aiService.analyzeFile(file, projectId),
     });
 }
 
@@ -74,3 +84,4 @@ export function useGenerateSuggestions() {
             aiService.generateSuggestions(data),
     });
 }
+

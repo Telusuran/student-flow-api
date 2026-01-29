@@ -136,22 +136,25 @@ export default function ProjectsPage() {
                                 value={project.status || 'active'}
                                 onChange={(e) => updateProjectStatus(project.id, e.target.value)}
                                 className={`px-2 py-1 text-xs font-semibold rounded-full border-0 cursor-pointer ${project.status === 'active' ? 'bg-green-100 text-green-800' :
-                                        project.status === 'archived' ? 'bg-gray-100 text-gray-800' :
-                                            'bg-red-100 text-red-800'
+                                    project.status === 'archived' ? 'bg-gray-100 text-gray-800' :
+                                        'bg-red-100 text-red-800'
                                     }`}
                             >
                                 <option value="active">Active</option>
                                 <option value="archived">Archived</option>
                                 <option value="deleted">Deleted</option>
+                                <option value="deleted">Deleted</option>
                             </select>
                         </div>
 
-                        <h3 className="font-bold text-text-main mb-1">{project.name}</h3>
-                        <p className="text-sm text-text-muted mb-2">{project.courseCode || 'No course code'}</p>
+                        <div onClick={() => window.location.href = `/projects/${project.id}`} className="cursor-pointer">
+                            <h3 className="font-bold text-text-main mb-1 hover:text-primary transition-colors">{project.name}</h3>
+                            <p className="text-sm text-text-muted mb-2">{project.courseCode || 'No course code'}</p>
 
-                        {project.description && (
-                            <p className="text-sm text-gray-600 mb-3 line-clamp-2">{project.description}</p>
-                        )}
+                            {project.description && (
+                                <p className="text-sm text-gray-600 mb-3 line-clamp-2">{project.description}</p>
+                            )}
+                        </div>
 
                         <div className="flex items-center justify-between text-xs text-text-muted mb-4">
                             <span>Progress: {project.progress || 0}%</span>

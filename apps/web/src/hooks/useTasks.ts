@@ -9,7 +9,6 @@ import type {
     CreateTaskData,
     UpdateTaskData,
     CreateCommentData,
-    CreateAttachmentData,
 } from "../lib/api/types";
 
 // Query keys
@@ -228,11 +227,11 @@ export function useAddAttachment() {
     return useMutation({
         mutationFn: ({
             taskId,
-            data,
+            file,
         }: {
             taskId: string;
-            data: CreateAttachmentData;
-        }) => tasksService.addAttachment(taskId, data),
+            file: File;
+        }) => tasksService.addAttachment(taskId, file),
         onSuccess: (_, { taskId }) => {
             queryClient.invalidateQueries({
                 queryKey: taskKeys.attachments(taskId),

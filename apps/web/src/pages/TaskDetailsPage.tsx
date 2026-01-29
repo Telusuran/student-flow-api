@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useTask, useUpdateTask, useUpdateTaskStatus, useTaskComments, useAddComment, useTaskAttachments, useDeleteTask } from '../hooks/useTasks';
+import { useTask, useUpdateTask, useUpdateTaskStatus, useTaskComments, useAddComment, useTaskAttachments, useAddAttachment, useDeleteTask } from '../hooks/useTasks';
 import { useSession } from '../lib/auth-client';
 
 export const TaskDetailsPage: React.FC = () => {
@@ -17,6 +17,7 @@ export const TaskDetailsPage: React.FC = () => {
     const updateTask = useUpdateTask();
     const updateStatus = useUpdateTaskStatus();
     const addComment = useAddComment();
+    const addAttachment = useAddAttachment(); // Add hook
     const deleteTask = useDeleteTask();
 
     // Local State
@@ -24,6 +25,7 @@ export const TaskDetailsPage: React.FC = () => {
     const [newComment, setNewComment] = useState('');
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+    const fileInputRef = React.useRef<HTMLInputElement>(null); // Add ref
 
     useEffect(() => {
         if (task && task.description !== description) {
@@ -96,6 +98,22 @@ export const TaskDetailsPage: React.FC = () => {
             setHasUnsavedChanges(true);
         } else {
             setHasUnsavedChanges(false);
+        }
+    };
+
+    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file || !task) return;
+
+        try {
+            await addAttachment.mutateAsync({ taskId: task.id, file });
+        } catch (error) {
+            console.error('Failed to upload attachment:', error);
+            alert('Failed to upload file. Please try again.');
+        } finally {
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
         }
     };
 
@@ -192,10 +210,26 @@ export const TaskDetailsPage: React.FC = () => {
                                     </a>
                                 ))}
                                 {/* Add New Placeholder */}
-                                <button className="flex items-center justify-center gap-2 p-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary hover:bg-primary/5 text-text-secondary hover:text-primary transition-all">
-                                    <span className="material-symbols-outlined">add</span>
-                                    <span className="text-sm font-medium">Add File</span>
+                                <button
+                                    onClick={() => fileInputRef.current?.click()}
+                                    disabled={addAttachment.isPending}
+                                    className="flex items-center justify-center gap-2 p-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary hover:bg-primary/5 text-text-secondary hover:text-primary transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {addAttachment.isPending ? (
+                                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
+                                    ) : (
+                                        <>
+                                            <span className="material-symbols-outlined">add</span>
+                                            <span className="text-sm font-medium">Add File</span>
+                                        </>
+                                    )}
                                 </button>
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    onChange={handleFileChange}
+                                    className="hidden"
+                                />
                             </div>
                         </div>
 

@@ -7,7 +7,6 @@ import type {
     CreateTaskData,
     UpdateTaskData,
     CreateCommentData,
-    CreateAttachmentData,
 } from "./types";
 
 export const tasksService = {
@@ -102,8 +101,10 @@ export const tasksService = {
      */
     addAttachment: (
         taskId: string,
-        data: CreateAttachmentData
+        file: File
     ): Promise<Attachment> => {
-        return apiClient.post<Attachment>(`/tasks/${taskId}/attachments`, data);
+        const formData = new FormData();
+        formData.append('file', file);
+        return apiClient.post<Attachment>(`/tasks/${taskId}/attachments`, formData);
     },
 };

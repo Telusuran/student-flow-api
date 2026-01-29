@@ -32,10 +32,22 @@ export const aiService = {
     },
 
     /**
-     * Analyze document content
+     * Analyze document content (text)
      */
     analyzeDocument: (data: AnalyzeDocumentData): Promise<DocumentAnalysis> => {
         return apiClient.post<DocumentAnalysis>("/ai/analyze-document", data);
+    },
+
+    /**
+     * Analyze uploaded file (PDF, Image) using multimodal AI
+     */
+    analyzeFile: (file: File, projectId?: string): Promise<DocumentAnalysis> => {
+        const formData = new FormData();
+        formData.append('file', file);
+        if (projectId) {
+            formData.append('projectId', projectId);
+        }
+        return apiClient.post<DocumentAnalysis>("/ai/analyze-file", formData);
     },
 
     /**
@@ -66,3 +78,4 @@ export const aiService = {
         return apiClient.post<AISuggestion[]>("/ai/generate-suggestions", data);
     },
 };
+

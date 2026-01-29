@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { authMiddleware } from '../middleware/auth.middleware.js';
 import { rateLimitMiddleware } from '../middleware/rate-limit.middleware.js';
 import { aiService } from '../services/ai.service.js';
+import { upload } from '../config/multer.js';
 
 const router = Router();
 
@@ -83,7 +84,7 @@ router.get('/global-report', aiRateLimit, async (req, res, next) => {
     }
 });
 
-// POST /api/ai/analyze-document - Analyze document content
+// POST /api/ai/analyze-document - Analyze document content (text)
 router.post('/analyze-document', aiRateLimit, async (req, res, next) => {
     try {
         const { content, projectId } = req.body;
@@ -93,6 +94,27 @@ router.post('/analyze-document', aiRateLimit, async (req, res, next) => {
         const analysis = await aiService.analyzeDocument(
             content,
             projectId,
+            req.user!.id
+        );
+        res.json(analysis);
+    } catch (error) {
+        next(error);
+    }
+});
+
+// POST /api/ai/analyze-file - Analyze uploaded file (PDF, Image) using multimodal AI
+router.post('/analyze-file', aiRateLimit, upload.single('file'), async (req, res, next) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
+
+        const { projectId } = req.body;
+        const analysis = await aiService.analyzeFile(
+            req.file.buffer,
+            req.file.mimetype,
+            req.file.originalname,
+            projectId || null,
             req.user!.id
         );
         res.json(analysis);
@@ -120,4 +142,5 @@ router.post('/generate-suggestions', aiRateLimit, async (req, res, next) => {
 });
 
 export default router;
+
 

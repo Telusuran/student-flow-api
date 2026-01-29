@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useCurrentUser, useUpdateProfile } from '../hooks/useCurrentUser';
+import { useCurrentUser, useUpdateProfile, useUploadAvatar } from '../hooks/useCurrentUser';
 
 export const EditProfilePage: React.FC = () => {
     const navigate = useNavigate();
     const { data: user, isLoading } = useCurrentUser();
     const updateProfile = useUpdateProfile();
+    const uploadAvatar = useUploadAvatar();
 
     const [name, setName] = useState('');
     const [institution, setInstitution] = useState('');
@@ -13,6 +14,11 @@ export const EditProfilePage: React.FC = () => {
     const [bio, setBio] = useState('');
     const [isSaving, setIsSaving] = useState(false);
     const [saveSuccess, setSaveSuccess] = useState(false);
+
+    // Avatar Upload State
+    const [isUploading, setIsUploading] = useState(false);
+    const [uploadError, setUploadError] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Populate form with user data when loaded
     useEffect(() => {
@@ -28,6 +34,37 @@ export const EditProfilePage: React.FC = () => {
         navigate(-1); // Go back
     };
 
+    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        setUploadError(null);
+
+        // Validation
+        if (file.size > 5 * 1024 * 1024) {
+            setUploadError('File size must be less than 5MB');
+            return;
+        }
+        if (!file.type.startsWith('image/')) {
+            setUploadError('Only image files are allowed');
+            return;
+        }
+
+        try {
+            setIsUploading(true);
+            await uploadAvatar.mutateAsync(file);
+            // The query invalidation in hook will refresh the user data
+        } catch (error: any) {
+            console.error('Avatar upload failed:', error);
+            setUploadError(error.message || 'Failed to upload profile picture');
+        } finally {
+            setIsUploading(false);
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSaving(true);
@@ -37,7 +74,7 @@ export const EditProfilePage: React.FC = () => {
             await updateProfile.mutateAsync({ name, institution, major, bio });
             setSaveSuccess(true);
             setTimeout(() => {
-                navigate('/');
+                navigate('/'); // Redirect to dashboard or stay? Use navigate('/') for now as per original
             }, 1000);
         } catch (error) {
             console.error('Failed to update profile:', error);
@@ -71,7 +108,14 @@ export const EditProfilePage: React.FC = () => {
                         <Link to="/project" className="text-text-main text-sm font-medium hover:text-primary transition-colors">Projects</Link>
                         <a className="text-text-main text-sm font-medium hover:text-primary transition-colors" href="#">Grades</a>
                     </div>
-                    <div className="bg-center bg-no-repeat bg-cover rounded-full size-10 border-2 border-white shadow-sm" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuC6JXHpkCFvwjlkVzWIhw-224QZNLf8p6d6i_J4F-F6vabrZ0ACKIdB9gvDtdEzc2rnCUBOZYcfrUeEeMildd5SOvWfWs0UklgpeyRLauwXlhmrvUeItgoIv9-FxEe2oOZO0WDUNUyVrOUsCJbRSa7YTDozBlL2Ur6Yy1_dkiOhzE1I0eL7xrve_Uo8tJuazZD4t3OkFYSKtN6xDo90nGGDhF5YNLIyC5LZuWPHQrDnGMwsrr039jKKpWRBBxFBc9WxqbPE-34579gh")' }}></div>
+                    {/* Header Avatar */}
+                    {user?.image ? (
+                        <div className="bg-center bg-no-repeat bg-cover rounded-full size-10 border-2 border-white shadow-sm" style={{ backgroundImage: `url("${user.image}")` }}></div>
+                    ) : (
+                        <div className="flex items-center justify-center rounded-full size-10 border-2 border-white shadow-sm bg-primary/20 text-primary font-bold">
+                            {user?.name?.charAt(0).toUpperCase()}
+                        </div>
+                    )}
                 </div>
             </header>
 
@@ -110,21 +154,50 @@ export const EditProfilePage: React.FC = () => {
                         <div className="p-6 md:p-8 border-b border-gray-100 bg-gradient-to-r from-card-beige to-white">
                             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
                                 <div className="relative group">
-                                    <div className="bg-center bg-no-repeat bg-cover rounded-full size-32 shadow-md border-4 border-white" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuBSaaI-gMMkgobRraR3vK4rqYF2eN4lNF4J69X91sBXLDnfzW_8NE74PAmm6mnkV-4Bg25NJ8r_aL7rfJByAO4043HLviokzVWHPOCjD_KavBa_q4D2iQ9hIj8lNGBYEqQEubKS9xMih7q7ucdGfY_02VUquuFUHghBk9qqxGVSTYltYF8jzuky8rFJk5TTQTxtIjYE_9uMtpd0Jp5y2GrYzKb1AhDonajAMIBzGqCYbX3gcWwdGt7cxGQJwL-iQkMUiLHU5n7Zo9Jq")' }}></div>
-                                    <button className="absolute bottom-0 right-0 bg-primary text-text-main p-2 rounded-full shadow-lg hover:bg-yellow-400 transition-colors" title="Upload new photo">
+                                    <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-md bg-white relative flex items-center justify-center text-4xl font-bold text-gray-300">
+                                        {user?.image ? (
+                                            <img src={user.image} alt={user.name} className="w-full h-full object-cover" />
+                                        ) : (
+                                            user?.name?.charAt(0).toUpperCase()
+                                        )}
+
+                                        {isUploading && (
+                                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10">
+                                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => fileInputRef.current?.click()}
+                                        disabled={isUploading}
+                                        className="absolute bottom-0 right-0 bg-primary text-text-main p-2 rounded-full shadow-lg hover:bg-yellow-400 transition-colors disabled:opacity-50"
+                                        title="Upload new photo"
+                                    >
                                         <span className="material-symbols-outlined text-sm">photo_camera</span>
                                     </button>
+                                    <input
+                                        type="file"
+                                        ref={fileInputRef}
+                                        onChange={handleFileChange}
+                                        accept="image/*"
+                                        className="hidden"
+                                    />
                                 </div>
                                 <div className="flex flex-col items-center sm:items-start justify-center flex-1 pt-2">
                                     <h3 className="text-xl font-bold text-text-main">Profile Photo</h3>
                                     <p className="text-text-muted text-sm mt-1 text-center sm:text-left">This will be displayed on your profile and in project groups.</p>
+                                    {uploadError && <p className="text-red-500 text-xs mt-2">{uploadError}</p>}
                                     <div className="flex gap-3 mt-4">
-                                        <button className="inline-flex items-center justify-center px-4 py-2 border border-gray-200 shadow-sm text-sm font-medium rounded-lg text-text-main bg-card-beige hover:bg-[#eae8d6] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors" type="button">
-                                            Change Photo
+                                        <button
+                                            type="button"
+                                            onClick={() => fileInputRef.current?.click()}
+                                            disabled={isUploading}
+                                            className="inline-flex items-center justify-center px-4 py-2 border border-gray-200 shadow-sm text-sm font-medium rounded-lg text-text-main bg-card-beige hover:bg-[#eae8d6] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors disabled:opacity-50"
+                                        >
+                                            {isUploading ? 'Uploading...' : 'Change Photo'}
                                         </button>
-                                        <button className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-red-600 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors" type="button">
-                                            Remove
-                                        </button>
+                                        {/* Remove functionality not implemented yet, just visual */}
                                     </div>
                                 </div>
                             </div>

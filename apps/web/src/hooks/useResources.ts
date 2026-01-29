@@ -11,10 +11,23 @@ export const resourceKeys = {
     all: ["resources"] as const,
     lists: () => [...resourceKeys.all, "list"] as const,
     list: (projectId: string) => [...resourceKeys.lists(), { projectId }] as const,
+    folder: (projectId: string, parentId: string | null) =>
+        [...resourceKeys.list(projectId), { parentId }] as const,
 };
 
 /**
- * Hook to fetch resources for a project
+ * Hook to fetch resources in a folder (or root)
+ */
+export function useResourcesInFolder(projectId: string, parentId: string | null = null) {
+    return useQuery({
+        queryKey: resourceKeys.folder(projectId, parentId),
+        queryFn: () => resourcesService.getByFolder(projectId, parentId),
+        enabled: !!projectId,
+    });
+}
+
+/**
+ * Hook to fetch all resources for a project (flat list)
  */
 export function useResources(projectId: string) {
     return useQuery({
@@ -35,6 +48,57 @@ export function useCreateResource() {
         onSuccess: (newResource: Resource) => {
             queryClient.invalidateQueries({
                 queryKey: resourceKeys.list(newResource.projectId),
+            });
+        },
+    });
+}
+
+/**
+ * Hook to create a folder
+ */
+export function useCreateFolder() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ projectId, name, parentId }: { projectId: string; name: string; parentId?: string | null }) =>
+            resourcesService.createFolder(projectId, name, parentId),
+        onSuccess: (newFolder: Resource) => {
+            queryClient.invalidateQueries({
+                queryKey: resourceKeys.list(newFolder.projectId),
+            });
+        },
+    });
+}
+
+/**
+ * Hook to rename a resource
+ */
+export function useRenameResource() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ id, name, projectId }: { id: string; name: string; projectId: string }) =>
+            resourcesService.rename(id, name),
+        onSuccess: (_, { projectId }) => {
+            queryClient.invalidateQueries({
+                queryKey: resourceKeys.list(projectId),
+            });
+        },
+    });
+}
+
+/**
+ * Hook to move a resource to a different folder
+ */
+export function useMoveResource() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ id, parentId, projectId }: { id: string; parentId: string | null; projectId: string }) =>
+            resourcesService.move(id, parentId),
+        onSuccess: (_, { projectId }) => {
+            queryClient.invalidateQueries({
+                queryKey: resourceKeys.list(projectId),
             });
         },
     });
@@ -64,8 +128,8 @@ export function useUploadResource() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: ({ projectId, file }: { projectId: string; file: File }) =>
-            resourcesService.upload(projectId, file),
+        mutationFn: ({ projectId, file, parentId }: { projectId: string; file: File; parentId?: string | null }) =>
+            resourcesService.upload(projectId, file, parentId),
         onSuccess: (newResource: Resource) => {
             queryClient.invalidateQueries({
                 queryKey: resourceKeys.list(newResource.projectId),
@@ -73,3 +137,4 @@ export function useUploadResource() {
         },
     });
 }
+

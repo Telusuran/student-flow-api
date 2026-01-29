@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, boolean } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import { user } from './auth.schema.js';
 import { projects } from './projects.schema.js';
@@ -10,13 +10,16 @@ export const resources = pgTable('resources', {
     projectId: text('project_id')
         .notNull()
         .references(() => projects.id, { onDelete: 'cascade' }),
+    parentId: text('parent_id'), // Self-referencing for folder hierarchy (null = root)
+    isFolder: boolean('is_folder').default(false).notNull(),
     name: text('name').notNull(),
     description: text('description'),
-    type: text('type').notNull(), // linked_file, external_tool
-    source: text('source'), // google_drive, figma, trello, etc.
+    type: text('type').notNull(), // linked_file, external_tool, folder
+    source: text('source'), // google_drive, figma, trello, upload, etc.
     url: text('url'),
     thumbnailUrl: text('thumbnail_url'),
-    fileType: text('file_type'), // pdf, jpg, doc, etc.
+    fileType: text('file_type'), // pdf, jpg, doc, etc. (null for folders)
+    fileSize: text('file_size'), // File size in bytes (for display)
     tags: text('tags').array(),
     addedBy: text('added_by').references(() => user.id),
     createdAt: timestamp('created_at').defaultNow(),

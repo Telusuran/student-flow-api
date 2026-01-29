@@ -2,6 +2,8 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { usersService } from '../services/users.service.js';
 import { authMiddleware } from '../middleware/auth.middleware.js';
+import { upload } from '../config/multer.js';
+import { storageService } from '../services/storage.service.js';
 
 const router = Router();
 
@@ -53,6 +55,28 @@ router.patch('/me', authMiddleware, async (req, res) => {
     } catch (error) {
         console.error('Update profile error:', error);
         res.status(500).json({ error: 'Failed to update profile' });
+    }
+});
+
+// Upload avatar
+router.post('/me/avatar', authMiddleware, upload.single('avatar'), async (req, res, next) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
+
+        const userId = req.user!.id;
+        // Upload to storage (local or cloud)
+        const avatarUrl = await storageService.upload(req.file, 'avatars');
+
+        // Update user profile with new avatar URL
+        const updatedUser = await usersService.update(userId, {
+            avatarUrl,
+        });
+
+        res.json(updatedUser);
+    } catch (error) {
+        next(error);
     }
 });
 

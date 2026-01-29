@@ -13,18 +13,7 @@ if (!fs.existsSync(uploadDir)) {
 }
 
 // Storage configuration
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, uploadDir);
-    },
-    filename: (req, file, cb) => {
-        // Create unique filename: timestamp-random-originalName
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        const ext = path.extname(file.originalname);
-        const name = path.basename(file.originalname, ext).replace(/[^a-zA-Z0-9]/g, '-');
-        cb(null, `${name}-${uniqueSuffix}${ext}`);
-    }
-});
+const storage = multer.memoryStorage();
 
 // File filter
 const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {

@@ -49,3 +49,20 @@ export const useDeleteAccount = () => {
         },
     });
 };
+
+export const useUploadAvatar = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (file: File) => {
+            const formData = new FormData();
+            formData.append('avatar', file);
+            // URL endpoint matches the one used in CMS: POST /api/users/me/avatar
+            // apiClient prepends /api
+            return apiClient.post<{ success: boolean; avatarUrl: string }>('/users/me/avatar', formData);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+        },
+    });
+};
