@@ -22,6 +22,8 @@ import notificationsRoutes from './notifications.routes.js';
 router.use('/notifications', notificationsRoutes);
 import resourcesRoutes from './resources.routes.js';
 router.use('/', resourcesRoutes); // Resources routes have specific paths like /projects/:id/resources and /resources
+import adminRoutes from './admin.routes.js';
+router.use('/admin', adminRoutes);
 
 
 
