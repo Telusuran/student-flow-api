@@ -45,6 +45,9 @@ export default {
                 "app-bg": "#E6F0FA",
                 "text-primary": "#181611",
                 "text-secondary": "#887e63",
+                "header-dark": "#20272C",
+                "sidebar-blue": "#88C7FF",
+                "text-dark-blue": "#1E293B",
             },
             fontFamily: {
                 "display": ["Lexend", "sans-serif"],

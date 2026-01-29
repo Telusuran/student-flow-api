@@ -32,7 +32,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
     // Sidebar classes
     const sidebarClasses = `
-        flex flex-col border-r border-accent-nav/20 bg-neutral-card p-4 gap-4 z-50 
+        flex flex-col border-r border-accent-nav/20 bg-sidebar-blue p-4 gap-4 z-50 
         transition-transform duration-300 ease-in-out
         w-64 h-full
         lg:translate-x-0 lg:static lg:flex
@@ -48,15 +48,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             <aside className={sidebarClasses}>
                 <div className="flex flex-col gap-4">
                     {/* User Profile */}
-                    <div className="flex gap-3 items-center px-2 py-2 mb-2 bg-neutral-bg/50 rounded-xl border border-white/50">
+                    <div className="flex gap-3 items-center p-2 mb-2 bg-[#E6F0FA]/50 rounded-xl border border-white/50 shadow-[0px_1px_2px_rgba(0,0,0,0.05)]">
                         <div
-                            className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12 border border-accent-nav/30"
+                            className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12 border border-secondary-accent/30"
                             data-alt="User profile avatar large"
                             style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDl47BeNfjhcx6ewJNIBEuvfiXkF5hOkdcAxLw-_pUL-88C02ZPzPCFORi7CfY92h2_uV307m0zb1j9qkeYacesDxEvBiLApsqlk_Nm6mPKG4TyCmQunpCbP-6i41CRho4JJrIfKzT58EdxGs1RCBh4Fw8iBqarBFwRD8SMiW-VJg1FWXq2x-x6CvaZUnvkvvScGr4J_DtwECpE3sll1AHehhNho0gqYyIn5vfCwfmFczfW-OFNeKRZxWY0JoZoTAO5WIiOlQsy8vHg')" }}
                         ></div>
                         <div className="flex flex-col overflow-hidden">
-                            <h1 className="text-text-main text-base font-bold leading-normal truncate">{user?.name || 'Guest'}</h1>
-                            <p className="text-accent-nav text-xs font-medium leading-normal truncate">{user?.email || 'Not logged in'}</p>
+                            <h1 className="text-text-main text-base font-bold leading-normal truncate">{user?.name || 'Romi'}</h1>
+                            <p className="text-secondary-accent text-xs font-medium leading-normal truncate">{user?.email || 'romiiii@gmail.com'}</p>
                         </div>
                     </div>
 
@@ -173,15 +173,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                             <path d="M12,16 C12,16 9,14 7,14" stroke="currentColor" strokeWidth="1"></path>
                         </svg>
                     </div>
-                    <div className="rounded-2xl bg-[#E8E8D8] p-4 border border-accent-nav/10 shadow-inner relative z-10">
+                    <div className="rounded-2xl bg-white p-4 border border-secondary-accent/10 shadow-[0px_2px_4px_1px_rgba(0,0,0,0.05)_inset] relative z-10 transition-transform hover:translate-y-[-2px]">
                         <div className="flex items-center justify-between mb-2">
                             <span className="text-slate-700 text-sm font-medium">Storage</span>
                             <span className="text-dynamic-cta text-xs font-bold">75%</span>
                         </div>
-                        <div className="w-full bg-white rounded-full h-2 mb-2">
-                            <div className="bg-gradient-to-r from-accent-nav to-dynamic-cta h-2 rounded-full" style={{ width: '75%' }}></div>
+                        <div className="w-full bg-neutral-100 rounded-full h-2 mb-2">
+                            <div className="bg-gradient-to-r from-secondary-accent to-dynamic-cta h-2 rounded-full" style={{ width: '75%' }}></div>
                         </div>
-                        <p className="text-xs text-text-muted">15GB used of 20GB</p>
+                        <p className="text-xs text-text-main">15GB used of 20GB</p>
                     </div>
                 </div>
             </aside>

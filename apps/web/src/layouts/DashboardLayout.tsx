@@ -17,7 +17,7 @@ export const DashboardLayout: React.FC = () => {
     return (
         <div className={`relative flex h-screen w-full flex-col overflow-hidden font-display text-text-main antialiased selection:bg-dynamic-cta selection:text-white transition-colors duration-500 ${isFocusMode ? 'bg-fokus-dark' : 'bg-neutral-bg'}`}>
             {/* Header */}
-            <header className={`flex items-center justify-between whitespace-nowrap border-b px-6 py-3 z-30 shadow-sm transition-colors duration-500 ${isFocusMode ? 'bg-fokus-dark border-white/5' : 'bg-neutral-card border-accent-nav/20'}`}>
+            <header className={`flex items-center justify-between whitespace-nowrap border-b px-6 py-3 z-30 shadow-sm transition-colors duration-500 ${isFocusMode ? 'bg-fokus-dark border-white/5' : 'bg-header-dark border-white/10'}`}>
                 <div className="flex items-center gap-8">
                     <div className="flex items-center gap-3 text-text-main">
                         {/* Hamburger Menu (Mobile Only) */}
@@ -33,15 +33,15 @@ export const DashboardLayout: React.FC = () => {
                         <div className={`size-8 flex items-center justify-center ${isFocusMode ? 'text-white' : 'text-dynamic-cta'}`}>
                             <span className="material-symbols-outlined text-3xl">local_florist</span>
                         </div>
-                        <h2 className={`text-lg font-bold leading-tight tracking-[-0.015em] ${isFocusMode ? 'text-white' : 'text-slate-800'}`}>StudentFlow</h2>
+                        <h2 className={`text-lg font-bold leading-tight tracking-[-0.015em] ${isFocusMode ? 'text-white' : 'text-[#D0D0D0]'}`}>StudentFlow</h2>
                     </div>
                     {!isFocusMode && (
                         <label className="hidden md:flex flex-col min-w-40 !h-10 max-w-64 secondary-header-elements">
                             <div className="flex w-full flex-1 items-stretch rounded-xl h-full bg-neutral-bg focus-within:ring-2 ring-dynamic-cta/50 transition-all border border-transparent hover:border-accent-nav/30">
-                                <div className="text-accent-nav flex border-none items-center justify-center pl-4 rounded-l-lg border-r-0">
+                                <div className="text-secondary-accent flex border-none items-center justify-center pl-4 rounded-l-lg border-r-0">
                                     <span className="material-symbols-outlined">search</span>
                                 </div>
-                                <input className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl bg-transparent text-text-main focus:outline-0 focus:ring-0 border-none h-full placeholder:text-accent-nav px-4 rounded-l-none border-l-0 pl-2 text-sm font-normal leading-normal" placeholder="Search projects..." />
+                                <input className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl bg-transparent text-text-main focus:outline-0 focus:ring-0 border-none h-full placeholder:text-secondary-accent px-4 rounded-l-none border-l-0 pl-2 text-sm font-normal leading-normal" placeholder="Search projects..." />
                             </div>
                         </label>
                     )}
@@ -74,7 +74,7 @@ export const DashboardLayout: React.FC = () => {
                                     </span>
                                 )}
                             </Link>
-                            <Link to="/create-project" className="hidden sm:flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-9 px-4 bg-dynamic-cta text-white text-sm font-bold leading-normal tracking-[0.015em] hover:brightness-110 transition-all shadow-glow hover:translate-y-[-1px] secondary-header-elements">
+                            <Link to="/create-project" className="hidden sm:flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-9 px-4 bg-[#0C0C0C] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:brightness-125 transition-all shadow-[0px_0px_20px_rgba(37,127,230,0.30)] hover:translate-y-[-1px] secondary-header-elements">
                                 <span className="truncate">Create New</span>
                             </Link>
                             <Link to="/settings/account" className="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-dynamic-cta/30 shadow-sm secondary-header-elements" data-alt="User profile avatar image" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuD0oW4gh5khJP6XabfjYdoTNNFt9SmW2Z--RqnvG9uaMJcHr8rtIMEtr4IB2a91L6WS_MPbUpwT09c2YdPuzgdCTVMAz-nQ9TGwDYFT5TbArNsIhsvaRxVGWAMAqMNPNyjXSkI8JTy-UBeHXkGdndEmjyV4CBoG_1RDBA-sya1KP-ZK3_PBfa7fKbAnQF4StYYZv5X4BEhL9tygw2L7E06e-ZiJG5Cl7i9o83Lw0NpQmtBQUP9STFu5uDX6wJgByfGHE4vHJOgzjZer')" }}></Link>
