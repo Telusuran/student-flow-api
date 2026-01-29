@@ -1,5 +1,5 @@
-import { db } from '../config/db';
-import { tasks } from '../db/schema';
+import { db } from '../config/db.js';
+import { tasks } from '../db/schema/index.js';
 import { desc } from 'drizzle-orm';
 import dotenv from 'dotenv';
 import path from 'path';
@@ -17,7 +17,7 @@ async function checkTasks() {
     });
 
     console.log(`Found ${recentTasks.length} recent tasks:`);
-    recentTasks.forEach(t => {
+    recentTasks.forEach((t: any) => {
         console.log(`- [${t.status}] "${t.title}" (Project: ${t.project?.name || t.projectId})`);
     });
     process.exit(0);
