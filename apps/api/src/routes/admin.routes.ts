@@ -199,37 +199,43 @@ router.patch('/users/:userId/role', async (req: Request, res: Response) => {
 
 // DELETE /api/admin/users/:userId - Delete a user
 router.delete('/users/:userId', async (req: Request, res: Response) => {
+    const { userId } = req.params;
+    const errors: string[] = [];
+
+    // Helper to run delete and catch errors
+    const safeDelete = async (query: ReturnType<typeof sql>, name: string) => {
+        try {
+            await db.execute(query);
+        } catch (e: any) {
+            console.warn(`Failed to delete ${name}:`, e.message);
+            errors.push(`${name}: ${e.message}`);
+        }
+    };
+
     try {
-        const { userId } = req.params;
-
         // Delete related data first (in order of dependencies)
-        // 1. Delete user's project memberships
-        await db.execute(sql`DELETE FROM project_members WHERE user_id = ${userId}`);
+        await safeDelete(sql`DELETE FROM project_members WHERE user_id = ${userId}`, 'project_members');
+        await safeDelete(sql`DELETE FROM task_assignees WHERE user_id = ${userId}`, 'task_assignees');
+        await safeDelete(sql`DELETE FROM session WHERE user_id = ${userId}`, 'sessions');
+        await safeDelete(sql`DELETE FROM account WHERE user_id = ${userId}`, 'accounts');
+        await safeDelete(sql`DELETE FROM user_profiles WHERE user_id = ${userId}`, 'user_profiles');
+        await safeDelete(sql`UPDATE projects SET owner_id = NULL WHERE owner_id = ${userId}`, 'projects_owner');
 
-        // 2. Delete user's task assignments
-        await db.execute(sql`DELETE FROM task_assignees WHERE user_id = ${userId}`);
-
-        // 3. Delete user's sessions
-        await db.execute(sql`DELETE FROM session WHERE user_id = ${userId}`);
-
-        // 4. Delete user's accounts
-        await db.execute(sql`DELETE FROM account WHERE user_id = ${userId}`);
-
-        // 5. Delete user's profile
-        await db.execute(sql`DELETE FROM user_profiles WHERE user_id = ${userId}`);
-
-        // 6. Update projects owned by this user (set owner to null or delete)
-        await db.execute(sql`UPDATE projects SET owner_id = NULL WHERE owner_id = ${userId}`);
-
-        // 7. Finally delete the user
+        // Finally delete the user
         await db.delete(user).where(eq(user.id, userId));
 
-        res.json({ success: true, message: 'User deleted successfully' });
+        res.json({
+            success: true,
+            message: 'User deleted successfully',
+            warnings: errors.length > 0 ? errors : undefined
+        });
     } catch (error: any) {
         console.error('Failed to delete user:', error);
         res.status(500).json({
             error: 'Failed to delete user',
-            message: error?.message || 'Unknown error'
+            message: error?.message || 'Unknown error',
+            step: 'final_user_delete',
+            previousErrors: errors
         });
     }
 });
