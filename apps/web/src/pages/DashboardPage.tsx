@@ -1,14 +1,47 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useProjects } from '../hooks/useProjects';
+import { useAllTasks } from '../hooks/useTasks';
 
 
 export const DashboardPage: React.FC = () => {
     const navigate = useNavigate();
     const [isBreathing, setIsBreathing] = useState(false);
+    const { data: projects } = useProjects();
+    const { data: tasks } = useAllTasks();
 
     const toggleBreathing = () => {
         setIsBreathing(!isBreathing);
     };
+
+    // 1. Completion Stats
+    const totalTasks = tasks?.length || 0;
+    const completedTasks = tasks?.filter(t => t.status === 'done').length || 0;
+    const completionPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+    // 2. Active Project (Just pick the first one for now, or one with most recent activity if we had that)
+    const activeProject = projects?.[0]; // Simple approach: first project
+    const activeProjectTasks = tasks?.filter(t => t.projectId === activeProject?.id) || [];
+    const activeProjectTotal = activeProjectTasks.length;
+    const activeProjectCompleted = activeProjectTasks.filter(t => t.status === 'done').length;
+    const activeProjectProgress = activeProjectTotal > 0 ? Math.round((activeProjectCompleted / activeProjectTotal) * 100) : 0;
+
+    // 3. Upcoming Deadline
+    // Filter tasks with due dates, sort by date, find first one in future or today
+    const upcomingTasks = tasks?.filter(t => t.dueDate && t.status !== 'done')
+        .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime()) || [];
+
+    const nextDeadline = upcomingTasks[0];
+
+    const getDaysRemaining = (dateString: string) => {
+        const today = new Date();
+        const due = new Date(dateString);
+        const diffTime = due.getTime() - today.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays;
+    };
+
+    const daysRemaining = nextDeadline?.dueDate ? getDaysRemaining(nextDeadline.dueDate) : 0;
 
     return (
         <div className="flex-1 min-h-full py-10 px-20 flex flex-col items-start gap-8 relative overflow-hidden">
@@ -61,12 +94,17 @@ export const DashboardPage: React.FC = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <p className="text-text-muted text-sm font-normal leading-5 font-display">0/1 tasks completed</p>
+                                    <p className="text-text-muted text-sm font-normal leading-5 font-display">{completedTasks}/{totalTasks} tasks completed</p>
                                 </div>
-                                <div className="text-[#E6B325] text-3xl font-black leading-tight font-display">0%</div>
+                                <div className="text-[#E6B325] text-3xl font-black leading-tight font-display">{completionPercentage}%</div>
                             </div>
                             {/* Progress Bar */}
-                            <div className="w-full h-4 relative bg-[#E6F0FA] shadow-inner rounded-full"></div>
+                            <div className="w-full h-4 relative bg-[#E6F0FA] shadow-inner rounded-full overflow-hidden">
+                                <div
+                                    className="h-full bg-gradient-to-r from-[#E6B325] to-[#F4D06F] rounded-full transition-all duration-1000 ease-out"
+                                    style={{ width: `${completionPercentage}%` }}
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -96,24 +134,33 @@ export const DashboardPage: React.FC = () => {
                                 </button>
                             </div>
                         </div>
-                        <div className="w-full p-2 flex flex-col">
+                        <div className="w-full p-2 flex flex-col items-center justify-center flex-1">
                             {/* Project Item */}
-                            <div className="w-full p-4 rounded-xl flex items-center gap-4 hover:bg-white/40 transition-colors">
-                                <div className="py-2 px-3 bg-blue-100 shadow-sm rounded-xl flex flex-col">
-                                    <div className="w-6 h-7 relative">
-                                        <div className="w-5 h-4 absolute left-[2px] top-[6px] bg-blue-600"></div>
+                            {activeProject ? (
+                                <div className="w-full p-4 rounded-xl flex items-center gap-4 hover:bg-white/40 transition-colors">
+                                    <div className="py-2 px-3 bg-blue-100 shadow-sm rounded-xl flex flex-col">
+                                        <div className="w-6 h-7 relative">
+                                            <div className="w-5 h-4 absolute left-[2px] top-[6px] bg-blue-600"></div>
+                                        </div>
+                                    </div>
+                                    <div className="flex-1 flex flex-col gap-1">
+                                        <div className="flex items-center">
+                                            <h4 className="flex-1 text-text-dark-blue text-base font-bold leading-6 font-display truncate">{activeProject.name}</h4>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex-1 h-2 bg-[#E6F0FA] rounded-full relative overflow-hidden">
+                                                <div className="h-full bg-blue-500 rounded-full" style={{ width: `${activeProjectProgress}%` }}></div>
+                                            </div>
+                                            <span className="text-secondary-accent text-xs font-bold leading-4 font-display">{activeProjectProgress}%</span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="flex-1 flex flex-col gap-1">
-                                    <div className="flex items-center">
-                                        <h4 className="flex-1 text-text-dark-blue text-base font-bold leading-6 font-display">tes blob vercel</h4>
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                        <div className="flex-1 h-2 bg-[#E6F0FA] rounded-full relative"></div>
-                                        <span className="text-secondary-accent text-xs font-bold leading-4 font-display">0%</span>
-                                    </div>
+                            ) : (
+                                <div className="text-center p-4">
+                                    <p className="text-text-muted text-sm">No active projects</p>
+                                    <button onClick={() => navigate('/create-project')} className="text-[#E6B325] text-xs font-bold mt-2 hover:underline">Create one</button>
                                 </div>
-                            </div>
+                            )}
                         </div>
                     </div>
 
@@ -130,27 +177,42 @@ export const DashboardPage: React.FC = () => {
                                 <span className="text-secondary-accent text-sm font-semibold leading-5 font-display">Calendar View</span>
                             </div>
                         </div>
-                        <div className="w-full p-4 flex flex-col">
+                        <div className="w-full p-4 flex flex-col items-center justify-center flex-1">
                             {/* Deadline Item */}
-                            <div className="w-full p-4 bg-white shadow-sm overflow-hidden rounded-r-xl border-l-[3px] border-l-[#E6B325] flex items-start gap-4 hover:bg-neutral-50 transition-colors">
-                                <div className="min-w-[50px] px-3 flex flex-col justify-center items-center">
-                                    <span className="text-[#E6B325] text-xs font-bold uppercase tracking-wider font-display">Jan</span>
-                                    <span className="text-[#E6B325] text-xl font-black leading-7 font-display">30</span>
-                                </div>
-                                <div className="flex flex-col gap-1 w-full">
-                                    <div className="flex items-center gap-2">
-                                        <div className="overflow-hidden flex flex-col pr-1">
-                                            <h4 className="text-slate-900 text-base font-bold leading-6 font-display truncate">membuat integrasi...</h4>
+                            {nextDeadline && nextDeadline.dueDate ? (
+                                <div className="w-full p-4 bg-white shadow-sm overflow-hidden rounded-r-xl border-l-[3px] border-l-[#E6B325] flex items-start gap-4 hover:bg-neutral-50 transition-colors">
+                                    <div className="min-w-[50px] px-3 flex flex-col justify-center items-center">
+                                        <span className="text-[#E6B325] text-xs font-bold uppercase tracking-wider font-display">
+                                            {new Date(nextDeadline.dueDate).toLocaleString('default', { month: 'short' })}
+                                        </span>
+                                        <span className="text-[#E6B325] text-xl font-black leading-7 font-display">
+                                            {new Date(nextDeadline.dueDate).getDate()}
+                                        </span>
+                                    </div>
+                                    <div className="flex flex-col gap-1 w-full overflow-hidden">
+                                        <div className="flex items-center gap-2">
+                                            <div className="overflow-hidden flex flex-col pr-1 w-full">
+                                                <h4 className="text-slate-900 text-base font-bold leading-6 font-display truncate">{nextDeadline.title}</h4>
+                                            </div>
                                         </div>
-                                        <div className="px-2 py-1 bg-yellow-100 shadow-inner rounded-md flex items-center">
-                                            <span className="text-yellow-800 text-xs font-bold leading-4 font-display">1 days</span>
+                                        <div className="flex items-center gap-2">
+                                            <div className="px-2 py-1 bg-yellow-100 shadow-inner rounded-md flex items-center">
+                                                <span className="text-yellow-800 text-xs font-bold leading-4 font-display">
+                                                    {daysRemaining > 0 ? `${daysRemaining} days` : daysRemaining === 0 ? 'Today' : 'Overdue'}
+                                                </span>
+                                            </div>
+                                            <span className="text-text-muted text-sm font-normal leading-5 font-display truncate block">
+                                                {projects?.find(p => p.id === nextDeadline.projectId)?.name || 'Task'}
+                                            </span>
                                         </div>
                                     </div>
-                                    <div className="overflow-hidden flex flex-col">
-                                        <span className="text-text-muted text-sm font-normal leading-5 font-display">Task</span>
-                                    </div>
                                 </div>
-                            </div>
+                            ) : (
+                                <div className="text-center p-4">
+                                    <p className="text-text-muted text-sm">No upcoming deadlines</p>
+                                    <button onClick={() => navigate('/calendar')} className="text-[#E6B325] text-xs font-bold mt-2 hover:underline">Check Calendar</button>
+                                </div>
+                            )}
                         </div>
                     </div>
 
