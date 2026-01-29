@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import './index.css' // Ensure index.css is imported
 
 function App() {
