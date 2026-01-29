@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { db } from '../db/index.js';
+import { db } from '../config/db.js';
 import { user } from '../db/schema/auth.schema.js';
 import { userProfiles } from '../db/schema/users.schema.js';
 import { projects } from '../db/schema/projects.schema.js';
