@@ -64,4 +64,44 @@ router.get('/db', async (req, res) => {
     }
 });
 
+// Test admin queries
+router.get('/admin-test', async (req, res) => {
+    try {
+        const { user } = await import('../db/schema/auth.schema.js');
+        const { userProfiles } = await import('../db/schema/users.schema.js');
+        const { projects } = await import('../db/schema/projects.schema.js');
+        const { desc } = await import('drizzle-orm');
+
+        const users = await db.select({
+            id: user.id,
+            name: user.name,
+            email: user.email,
+        })
+            .from(user)
+            .orderBy(desc(user.createdAt))
+            .limit(5);
+
+        const profiles = await db.select().from(userProfiles).limit(5);
+        const allProjects = await db.select().from(projects).limit(5);
+
+        res.json({
+            status: 'ok',
+            usersCount: users.length,
+            users,
+            profilesCount: profiles.length,
+            profiles,
+            projectsCount: allProjects.length,
+            projects: allProjects
+        });
+    } catch (error: any) {
+        console.error('Admin test error:', error);
+        res.status(500).json({
+            status: 'error',
+            message: error.message,
+            stack: error.stack
+        });
+    }
+});
+
 export default router;
+
