@@ -51,15 +51,21 @@ export class UsersService {
 
         if (!userData) return null;
 
-        // Get profile data if exists
-        const profileData = await this.database.query.userProfiles.findFirst({
-            where: eq(userProfiles.userId, id),
-            columns: {
-                institution: true,
-                major: true,
-                bio: true,
-            },
-        });
+        // Get profile data if exists (wrapped in try-catch for migration safety)
+        let profileData: { institution?: string | null; major?: string | null; bio?: string | null } | null = null;
+        try {
+            profileData = await this.database.query.userProfiles.findFirst({
+                where: eq(userProfiles.userId, id),
+                columns: {
+                    institution: true,
+                    major: true,
+                    bio: true,
+                },
+            }) ?? null;
+        } catch (error) {
+            // Profile table/columns might not exist yet - gracefully continue
+            console.warn('[UsersService] Could not fetch profile data:', error);
+        }
 
         return {
             ...userData,
@@ -95,32 +101,37 @@ export class UsersService {
         const hasProfileFields = data.institution !== undefined || data.major !== undefined || data.bio !== undefined;
 
         if (hasProfileFields) {
-            // Check if profile exists
-            const existingProfile = await this.database.query.userProfiles.findFirst({
-                where: eq(userProfiles.userId, id),
-            });
+            try {
+                // Check if profile exists
+                const existingProfile = await this.database.query.userProfiles.findFirst({
+                    where: eq(userProfiles.userId, id),
+                });
 
-            if (existingProfile) {
-                // Update existing profile
-                await this.database
-                    .update(userProfiles)
-                    .set({
-                        institution: data.institution,
-                        major: data.major,
-                        bio: data.bio,
-                        updatedAt: new Date(),
-                    })
-                    .where(eq(userProfiles.userId, id));
-            } else {
-                // Insert new profile
-                await this.database
-                    .insert(userProfiles)
-                    .values({
-                        userId: id,
-                        institution: data.institution ?? null,
-                        major: data.major ?? null,
-                        bio: data.bio ?? null,
-                    });
+                if (existingProfile) {
+                    // Update existing profile
+                    await this.database
+                        .update(userProfiles)
+                        .set({
+                            institution: data.institution,
+                            major: data.major,
+                            bio: data.bio,
+                            updatedAt: new Date(),
+                        })
+                        .where(eq(userProfiles.userId, id));
+                } else {
+                    // Insert new profile
+                    await this.database
+                        .insert(userProfiles)
+                        .values({
+                            userId: id,
+                            institution: data.institution ?? null,
+                            major: data.major ?? null,
+                            bio: data.bio ?? null,
+                        });
+                }
+            } catch (error) {
+                // Profile table/columns might not exist yet - log and continue
+                console.warn('[UsersService] Could not update profile data:', error);
             }
         }
 
