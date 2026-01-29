@@ -216,6 +216,7 @@ router.delete('/users/:userId', async (req: Request, res: Response) => {
         // Delete related data first (in order of dependencies)
         await safeDelete(sql`DELETE FROM project_members WHERE user_id = ${userId}`, 'project_members');
         await safeDelete(sql`DELETE FROM task_assignees WHERE user_id = ${userId}`, 'task_assignees');
+        await safeDelete(sql`UPDATE tasks SET created_by = NULL WHERE created_by = ${userId}`, 'tasks_created_by');
         await safeDelete(sql`DELETE FROM session WHERE user_id = ${userId}`, 'sessions');
         await safeDelete(sql`DELETE FROM account WHERE user_id = ${userId}`, 'accounts');
         await safeDelete(sql`DELETE FROM user_profiles WHERE user_id = ${userId}`, 'user_profiles');
