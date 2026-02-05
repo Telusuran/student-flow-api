@@ -1,0 +1,116 @@
+{
+  "meta": {
+    "project": "Student Flow PM",
+    "date": "2026-02-04",
+    "prepared_by": "Khafidh (Development Team)"
+  },
+  "product_overview": "Student Flow PM is a specialized project management platform optimized for students, combining AI-powered assistance with an intuitive interface tailored to academic workflows. It balances complexity and usability by addressing student-specific challenges such as project inertia, progress visibility, and administrative burden through intelligent automation and data-driven insights.",
+  "core_goals": [
+    "Eliminate friction with AI-assisted project kickoff and task generation minimizing startup inertia",
+    "Provide context-aware project management understanding academic workflows and deadlines",
+    "Deliver data-driven insights and automated analytics for visual progress tracking",
+    "Design an intuitive, student-centric user experience optimized for academic projects"
+  ],
+  "key_features": [
+    "User Authentication and Profile Management via Better Auth with email signup, password recovery, and notification preferences",
+    "Multi-step Project Creation Wizard with AI-generated task breakdowns and timeline suggestions",
+    "Comprehensive Task Management including CRUD operations, nested subtasks, status tracking, and dependencies",
+    "AI-powered features such as smart task generation, document analysis, progress insights, and timeline recommendations",
+    "Calendar & Timeline views for visual deadline and milestone management with color-coded priorities",
+    "Resource Management supporting file and link uploads with tagging and version tracking",
+    "Real-time Collaboration via project messaging channels and granular notification settings",
+    "Data Insights Dashboard showing progress charts, velocity tracking, and productivity patterns",
+    "Collaborative Project Workspace for shared resources, team task overview, and messaging integration"
+  ],
+  "user_flow_summary": [
+    "Primary Flow: From dashboard, create a project via multi-step wizard; AI suggests tasks/milestones; confirm; access project page with task board and AI sidebar",
+    "Secondary Flow: Upload academic documents for AI document analysis that extracts key requirements and auto-generates tasks for review and acceptance",
+    "Tertiary Flow: Use calendar view to navigate tasks by due date, quick add new tasks, reschedule, and edit task details"
+  ],
+  "validation_criteria": [
+    "Successful user registration, login, and profile management with secure authentication and profile updates",
+    "Project creation flow completes with AI-generated suggestions and projects appear correctly in dashboard",
+    "Tasks can be created, edited, deleted, and reordered with accurate status and priority updates",
+    "AI services process documents and yield relevant task suggestions and timeline recommendations",
+    "Calendar displays tasks accurately and supports user interactions like quick add and rescheduling",
+    "File and link uploads are functional and resources can be linked to tasks and projects",
+    "Real-time messaging enables project team communication with notifications and thread support",
+    "Dashboard analytics accurately reflect project progress, velocity, and individual productivity trends",
+    "System maintains performance benchmarks: page load under 2 seconds, API response under 500ms, and 99.5% uptime"
+  ],
+  "code_summary": {
+    "tech_stack": [
+      "TypeScript",
+      "Express",
+      "PostgreSQL",
+      "Drizzle ORM",
+      "BetterAuth",
+      "Zod"
+    ],
+    "features": [
+      {
+        "name": "Projects API",
+        "description": "API for managing projects, including creation, updates, deletion, and member management.",
+        "files": [
+          "src/routes/projects.routes.ts",
+          "src/services/projects.service.ts"
+        ]
+      },
+      {
+        "name": "Tasks API",
+        "description": "API for task management (CRUD), assignment, status updates, comments, and attachments.",
+        "files": [
+          "src/routes/tasks.routes.ts",
+          "src/services/tasks.service.ts"
+        ]
+      },
+      {
+        "name": "Users API",
+        "description": "API for user profile management, avatar uploads, and user search.",
+        "files": [
+          "src/routes/users.routes.ts",
+          "src/services/users.service.ts"
+        ]
+      },
+      {
+        "name": "AI API",
+        "description": "API for AI-powered features like project health, task suggestions, insights reports, and document analysis.",
+        "files": [
+          "src/routes/ai.routes.ts",
+          "src/services/ai.service.ts"
+        ]
+      },
+      {
+        "name": "Resources API",
+        "description": "API for resource management (files, links), folder structure, and file uploads.",
+        "files": [
+          "src/routes/resources.routes.ts",
+          "src/services/resources.service.ts"
+        ]
+      },
+      {
+        "name": "Admin API",
+        "description": "Administrative API for system statistics, user management, and project oversight.",
+        "files": [
+          "src/routes/admin.routes.ts"
+        ]
+      },
+      {
+        "name": "Notifications API",
+        "description": "API for user notifications and notification settings.",
+        "files": [
+          "src/routes/notifications.routes.ts",
+          "src/services/notifications.service.ts"
+        ]
+      },
+      {
+        "name": "Messaging API",
+        "description": "API for real-time messaging within project channels.",
+        "files": [
+          "src/routes/messaging.routes.ts",
+          "src/services/messaging.service.ts"
+        ]
+      }
+    ]
+  }
+}

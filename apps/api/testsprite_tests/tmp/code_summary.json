@@ -1,0 +1,75 @@
+{
+    "tech_stack": [
+        "TypeScript",
+        "Express",
+        "PostgreSQL",
+        "Drizzle ORM",
+        "BetterAuth",
+        "Zod"
+    ],
+    "features": [
+        {
+            "name": "Projects API",
+            "description": "API for managing projects, including creation, updates, deletion, and member management.",
+            "files": [
+                "src/routes/projects.routes.ts",
+                "src/services/projects.service.ts"
+            ]
+        },
+        {
+            "name": "Tasks API",
+            "description": "API for task management (CRUD), assignment, status updates, comments, and attachments.",
+            "files": [
+                "src/routes/tasks.routes.ts",
+                "src/services/tasks.service.ts"
+            ]
+        },
+        {
+            "name": "Users API",
+            "description": "API for user profile management, avatar uploads, and user search.",
+            "files": [
+                "src/routes/users.routes.ts",
+                "src/services/users.service.ts"
+            ]
+        },
+        {
+            "name": "AI API",
+            "description": "API for AI-powered features like project health, task suggestions, insights reports, and document analysis.",
+            "files": [
+                "src/routes/ai.routes.ts",
+                "src/services/ai.service.ts"
+            ]
+        },
+        {
+            "name": "Resources API",
+            "description": "API for resource management (files, links), folder structure, and file uploads.",
+            "files": [
+                "src/routes/resources.routes.ts",
+                "src/services/resources.service.ts"
+            ]
+        },
+        {
+            "name": "Admin API",
+            "description": "Administrative API for system statistics, user management, and project oversight.",
+            "files": [
+                "src/routes/admin.routes.ts"
+            ]
+        },
+        {
+            "name": "Notifications API",
+            "description": "API for user notifications and notification settings.",
+            "files": [
+                "src/routes/notifications.routes.ts",
+                "src/services/notifications.service.ts"
+            ]
+        },
+        {
+            "name": "Messaging API",
+            "description": "API for real-time messaging within project channels.",
+            "files": [
+                "src/routes/messaging.routes.ts",
+                "src/services/messaging.service.ts"
+            ]
+        }
+    ]
+}

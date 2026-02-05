@@ -1,0 +1,118 @@
+{
+  "meta": {
+    "project": "Student Flow PM",
+    "date": "2026-02-04",
+    "prepared_by": "Khafidh (Development Team)"
+  },
+  "product_overview": "Student Flow PM is an AI-powered academic project management platform designed specifically for students, combining enterprise-grade tools with simplicity to eliminate friction, provide context-aware management, and deliver data-driven insights tailored for academic workflows.",
+  "core_goals": [
+    "Eliminate friction with AI-assisted project setup and task generation",
+    "Provide context-aware management inspired by NotebookLM intelligence",
+    "Deliver automated analytics and visual progress tracking",
+    "Design an intuitive UX optimized for students, not corporate project managers"
+  ],
+  "key_features": [
+    "Authentication & User Management including registration, login, password recovery, and profile setup",
+    "Multi-step Project Management with AI-suggested timelines, task generation, and progress tracking",
+    "Task Management with CRUD operations, nested subtasks, priorities, statuses, and dependencies",
+    "AI-Powered Features such as smart task generation, document analysis, and progress insights",
+    "Calendar & Timeline views with color coding, multi-project support, and quick task additions",
+    "Resource Management for files and links with tagging, search, and version tracking",
+    "Collaboration including project messaging, real-time chat, notifications, and activity feeds",
+    "Data Insights & Analytics dashboards with charts, velocity tracking, and productivity analysis",
+    "Shared Project Space for collaborative group work with team overview and shared resources"
+  ],
+  "user_flow_summary": [
+    "Primary Flow: User creates new project via multi-step wizard with AI task and milestone suggestions, then navigates to project page to manage tasks and view AI insights",
+    "Secondary Flow: User uploads academic documents for AI-powered extraction of key requirements and automatic task generation, then reviews and accepts tasks",
+    "Tertiary Flow: User manages tasks through calendar view by viewing, adding, rescheduling, or editing tasks across multiple projects"
+  ],
+  "validation_criteria": [
+    "User can register, login, reset password, and setup profile without errors",
+    "Projects can be created, edited, deleted, and archived with AI-generated task suggestions confirmed by users",
+    "Tasks support full CRUD operations including nested subtasks and status/priority updates",
+    "AI features accurately analyze documents and provide context-aware suggestions accepted by >40% users",
+    "Calendar displays all project deadlines with color coding and supports quick task addition and rescheduling",
+    "Resource uploads linkable to tasks with proper organization and search functionality",
+    "Real-time messaging and notifications function with proper user settings management",
+    "Data insights dashboards update correctly and reflect accurate project and productivity metrics",
+    "Performance meets requirements: dashboard loads <2s, API calls respond <500ms, uptime >99.5%"
+  ],
+  "code_summary": {
+    "tech_stack": [
+      "React",
+      "Vite",
+      "TypeScript",
+      "TailwindCSS",
+      "React Router"
+    ],
+    "features": [
+      {
+        "name": "Authentication",
+        "description": "User login, registration, password reset, and profile setup flows.",
+        "files": [
+          "src/pages/LoginPage.tsx",
+          "src/pages/RegisterPage.tsx",
+          "src/pages/ForgotPasswordPage.tsx",
+          "src/pages/ResetPasswordPage.tsx"
+        ]
+      },
+      {
+        "name": "Dashboard",
+        "description": "Main user dashboard with project overview, kpi cards, and quick actions.",
+        "files": [
+          "src/pages/DashboardPage.tsx",
+          "src/components/DashboardHeader.tsx"
+        ]
+      },
+      {
+        "name": "Project Management",
+        "description": "Create, edit, delete, and view projects, including timeline, kanban, and list views.",
+        "files": [
+          "src/pages/ProjectPage.tsx",
+          "src/pages/CreateProjectPage.tsx",
+          "src/components/KanbanBoard.tsx"
+        ]
+      },
+      {
+        "name": "Task Management",
+        "description": "Task details, assignment, and status updates within projects.",
+        "files": [
+          "src/pages/TaskDetailsPage.tsx"
+        ]
+      },
+      {
+        "name": "Notifications",
+        "description": "User notification system and settings.",
+        "files": [
+          "src/pages/NotificationsPage.tsx",
+          "src/pages/NotificationSettingsPage.tsx"
+        ]
+      },
+      {
+        "name": "Resources & Messaging",
+        "description": "File management and team messaging within projects.",
+        "files": [
+          "src/pages/ResourceManagementPage.tsx",
+          "src/pages/ProjectMessagingPage.tsx"
+        ]
+      },
+      {
+        "name": "AI Features",
+        "description": "Data insights, document analysis, and AI-powered recommendations.",
+        "files": [
+          "src/pages/DataInsightPage.tsx",
+          "src/pages/DocumentAnalyzerPage.tsx"
+        ]
+      },
+      {
+        "name": "Settings",
+        "description": "User account and profile settings.",
+        "files": [
+          "src/pages/AccountSettingsPage.tsx",
+          "src/pages/EditProfilePage.tsx"
+        ]
+      }
+    ]
+  }
+}

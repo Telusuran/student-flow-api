@@ -1,0 +1,77 @@
+{
+    "tech_stack": [
+        "React",
+        "Vite",
+        "TypeScript",
+        "TailwindCSS",
+        "React Router"
+    ],
+    "features": [
+        {
+            "name": "Authentication",
+            "description": "User login, registration, password reset, and profile setup flows.",
+            "files": [
+                "src/pages/LoginPage.tsx",
+                "src/pages/RegisterPage.tsx",
+                "src/pages/ForgotPasswordPage.tsx",
+                "src/pages/ResetPasswordPage.tsx"
+            ]
+        },
+        {
+            "name": "Dashboard",
+            "description": "Main user dashboard with project overview, kpi cards, and quick actions.",
+            "files": [
+                "src/pages/DashboardPage.tsx",
+                "src/components/DashboardHeader.tsx"
+            ]
+        },
+        {
+            "name": "Project Management",
+            "description": "Create, edit, delete, and view projects, including timeline, kanban, and list views.",
+            "files": [
+                "src/pages/ProjectPage.tsx",
+                "src/pages/CreateProjectPage.tsx",
+                "src/components/KanbanBoard.tsx"
+            ]
+        },
+        {
+            "name": "Task Management",
+            "description": "Task details, assignment, and status updates within projects.",
+            "files": [
+                "src/pages/TaskDetailsPage.tsx"
+            ]
+        },
+        {
+            "name": "Notifications",
+            "description": "User notification system and settings.",
+            "files": [
+                "src/pages/NotificationsPage.tsx",
+                "src/pages/NotificationSettingsPage.tsx"
+            ]
+        },
+        {
+            "name": "Resources & Messaging",
+            "description": "File management and team messaging within projects.",
+            "files": [
+                "src/pages/ResourceManagementPage.tsx",
+                "src/pages/ProjectMessagingPage.tsx"
+            ]
+        },
+        {
+            "name": "AI Features",
+            "description": "Data insights, document analysis, and AI-powered recommendations.",
+            "files": [
+                "src/pages/DataInsightPage.tsx",
+                "src/pages/DocumentAnalyzerPage.tsx"
+            ]
+        },
+        {
+            "name": "Settings",
+            "description": "User account and profile settings.",
+            "files": [
+                "src/pages/AccountSettingsPage.tsx",
+                "src/pages/EditProfilePage.tsx"
+            ]
+        }
+    ]
+}

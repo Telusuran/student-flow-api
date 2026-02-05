@@ -1,0 +1,19 @@
+{
+  "status": "commited",
+  "type": "backend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:3002",
+  "backendAuthType": "basic token",
+  "backendUsername": "romi",
+  "backendPassword": "romi7@gmail.com",
+  "executionArgs": {
+    "projectName": "api",
+    "projectPath": "d:\\student-flow-monorepo\\apps\\api",
+    "testIds": [],
+    "additionalInstruction": "EXACT ENDPOINTS AND AUTH SPECIFICATIONS (MUST FOLLOW EXACTLY):\n\n1. AUTH ENDPOINTS (BETTER-AUTH LIBRARY):\n   - SIGN UP: POST /api/auth/sign-up/email (NOT /auth/register, NOT /users/login)\n   - SIGN IN: POST /api/auth/sign-in/email (NOT /auth/login)\n   - Body for sign-up: {\"email\": \"...\", \"password\": \"...\", \"name\": \"...\"}\n   - Body for sign-in: {\"email\": \"...\", \"password\": \"...\"}\n\n2. API PREFIX: ALL routes start with /api (e.g., /api/projects, /api/tasks)\n\n3. SESSION COOKIES (NOT BEARER TOKENS):\n   - Create: session = requests.Session()\n   - Use session.post(), session.get() for ALL requests\n   - Do NOT extract tokens from response\n   - Do NOT set Authorization headers\n   - Cookies are automatically handled by session object\n\n4. PROJECT CREATION: POST /api/projects\n   - Body: {\"name\": \"...\", \"description\": \"...\"}\n\n5. TASK CREATION: POST /api/tasks\n   - Body: {\"projectId\": \"...\", \"title\": \"...\", \"status\": \"...\"}\n\nCRITICAL: The /api prefix is REQUIRED on ALL endpoints!",
+    "envs": {
+      "API_KEY": "sk-user-3hrX0JahJGYlSGg8DieXkQq6OGN49XiHgQba6C69bqzVtDArD8o7CuiK_aDU5YyIeBC3lK14jcq84L3Tw3g4YJtY8vzwY65md52RXJuI0tDDEHNtHvBtGW5VHujWsC3LcfI"
+    }
+  },
+  "proxy": "http://0edb00c3-b589-4f13-b365-2e7caa62f6aa:udpBoxmJYnY4OoZ6iA7GRuI64aOdEJmo@tun.testsprite.com:8080"
+}

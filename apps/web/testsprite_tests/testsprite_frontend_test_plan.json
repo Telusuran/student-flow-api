@@ -1,0 +1,552 @@
+[
+  {
+    "id": "TC001",
+    "title": "User Registration with Valid Data",
+    "description": "Verify that a user can successfully register with valid inputs and completes profile setup without errors.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to the registration page"
+      },
+      {
+        "type": "action",
+        "description": "Fill in valid registration details (email, username, password)"
+      },
+      {
+        "type": "action",
+        "description": "Submit the registration form"
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm registration success message is displayed and user is directed to profile setup"
+      },
+      {
+        "type": "action",
+        "description": "Complete profile setup with valid data and submit"
+      },
+      {
+        "type": "assertion",
+        "description": "Profile is saved successfully and user is navigated to the dashboard"
+      }
+    ]
+  },
+  {
+    "id": "TC002",
+    "title": "User Login with Correct Credentials",
+    "description": "Check if a user can login successfully using correct email and password.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to login page"
+      },
+      {
+        "type": "action",
+        "description": "Enter valid email and password"
+      },
+      {
+        "type": "action",
+        "description": "Click login button"
+      },
+      {
+        "type": "assertion",
+        "description": "Login succeeds and dashboard page is displayed"
+      }
+    ]
+  },
+  {
+    "id": "TC003",
+    "title": "Password Reset Flow",
+    "description": "Verify that users can request password reset email and successfully reset password using the link.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to forgot password page"
+      },
+      {
+        "type": "action",
+        "description": "Enter registered email and submit password reset request"
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm that password reset email is sent"
+      },
+      {
+        "type": "action",
+        "description": "Use password reset link to navigate to reset password page"
+      },
+      {
+        "type": "action",
+        "description": "Enter new password and confirm password"
+      },
+      {
+        "type": "action",
+        "description": "Submit new password"
+      },
+      {
+        "type": "assertion",
+        "description": "Password is updated and user can login with new password"
+      }
+    ]
+  },
+  {
+    "id": "TC004",
+    "title": "Create New Project with AI-Generated Task Suggestions",
+    "description": "Validate that a user can create a new project using the multi-step wizard and receive AI-suggested tasks and milestones which can be confirmed or edited.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to create new project page"
+      },
+      {
+        "type": "action",
+        "description": "Complete project creation steps including name, description, and settings"
+      },
+      {
+        "type": "assertion",
+        "description": "AI-generated timeline and task suggestions are displayed"
+      },
+      {
+        "type": "action",
+        "description": "Modify or accept AI-generated tasks and milestones"
+      },
+      {
+        "type": "action",
+        "description": "Submit and complete project creation"
+      },
+      {
+        "type": "assertion",
+        "description": "Project is created successfully and appears in the project list"
+      }
+    ]
+  },
+  {
+    "id": "TC005",
+    "title": "Edit and Delete Project",
+    "description": "Ensure that users can edit project details and delete projects correctly.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to existing project page"
+      },
+      {
+        "type": "action",
+        "description": "Edit project details such as name and description"
+      },
+      {
+        "type": "action",
+        "description": "Save changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Project details are updated and reflected in the project view"
+      },
+      {
+        "type": "action",
+        "description": "Delete the project via project settings"
+      },
+      {
+        "type": "assertion",
+        "description": "Project is removed from the project list"
+      }
+    ]
+  },
+  {
+    "id": "TC006",
+    "title": "Create, Read, Update and Delete Task with Nested Subtasks",
+    "description": "Confirm that tasks support full CRUD operations including adding nested subtasks, updating statuses/priorities, and deletion.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to a project's task management view"
+      },
+      {
+        "type": "action",
+        "description": "Create a new task with title, description, priority, and status"
+      },
+      {
+        "type": "assertion",
+        "description": "Newly created task appears correctly in task list"
+      },
+      {
+        "type": "action",
+        "description": "Add nested subtasks to the created task"
+      },
+      {
+        "type": "assertion",
+        "description": "Subtasks are displayed as nested under the parent task"
+      },
+      {
+        "type": "action",
+        "description": "Update task and subtask statuses and priorities"
+      },
+      {
+        "type": "assertion",
+        "description": "Status and priority updates are saved and visible"
+      },
+      {
+        "type": "action",
+        "description": "Delete the task"
+      },
+      {
+        "type": "assertion",
+        "description": "Task and all subtasks are removed from the list"
+      }
+    ]
+  },
+  {
+    "id": "TC007",
+    "title": "AI Document Analysis and Task Generation Accuracy",
+    "description": "Test the AI-powered document analysis to extract academic requirements and auto-generate tasks, verifying accuracy and user acceptance.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to document analyzer page"
+      },
+      {
+        "type": "action",
+        "description": "Upload or input academic document text for analysis"
+      },
+      {
+        "type": "assertion",
+        "description": "AI extracts key requirements and displays generated tasks"
+      },
+      {
+        "type": "action",
+        "description": "Review and edit generated tasks"
+      },
+      {
+        "type": "action",
+        "description": "Accept tasks for addition to project"
+      },
+      {
+        "type": "assertion",
+        "description": "Tasks are added correctly and at least 40% user acceptance is met"
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "View and Manage Tasks in Calendar with Color Coding",
+    "description": "Validate that calendar view displays all project deadlines with appropriate color coding and supports task addition and rescheduling.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to calendar view"
+      },
+      {
+        "type": "assertion",
+        "description": "Calendar shows tasks/deadlines across multiple projects with correct color coding"
+      },
+      {
+        "type": "action",
+        "description": "Add a new task directly from calendar quick add"
+      },
+      {
+        "type": "assertion",
+        "description": "New task appears at selected date with proper color coding"
+      },
+      {
+        "type": "action",
+        "description": "Reschedule an existing task by dragging or editing date"
+      },
+      {
+        "type": "assertion",
+        "description": "Task date updates properly and calendar reflects the change"
+      }
+    ]
+  },
+  {
+    "id": "TC009",
+    "title": "Resource Management: Link Resources to Tasks and Search",
+    "description": "Ensure users can add, tag, organize, and search links and file resources linked to tasks.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to resource management page within a project"
+      },
+      {
+        "type": "action",
+        "description": "Add a new link or file resource with tags"
+      },
+      {
+        "type": "assertion",
+        "description": "New resource is listed with correct tags"
+      },
+      {
+        "type": "action",
+        "description": "Link resource to a specific task"
+      },
+      {
+        "type": "assertion",
+        "description": "Resource appears as linked within task details"
+      },
+      {
+        "type": "action",
+        "description": "Perform search for resources using tag or keyword"
+      },
+      {
+        "type": "assertion",
+        "description": "Search results correctly reflect related resources"
+      }
+    ]
+  },
+  {
+    "id": "TC010",
+    "title": "Real-Time Messaging and Notifications Functionality",
+    "description": "Verify real-time project messaging functionality along with notification delivery and user settings management.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Open project messaging page and send a message"
+      },
+      {
+        "type": "assertion",
+        "description": "Message appears instantly to other online team members"
+      },
+      {
+        "type": "action",
+        "description": "Trigger notification for a new message"
+      },
+      {
+        "type": "assertion",
+        "description": "User receives a notification alert"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to notification settings page"
+      },
+      {
+        "type": "action",
+        "description": "Change notification preferences and save"
+      },
+      {
+        "type": "assertion",
+        "description": "Notification settings are updated and respected for future alerts"
+      }
+    ]
+  },
+  {
+    "id": "TC011",
+    "title": "Data Insights Dashboard Accuracy and Performance",
+    "description": "Confirm that data insights and analytics dashboards update correctly reflecting project metrics and productivity data with dashboard load time under 2 seconds.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to data insights dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Dashboard loads within 2 seconds"
+      },
+      {
+        "type": "assertion",
+        "description": "Charts and metrics display accurate data corresponding to project progress and productivity"
+      },
+      {
+        "type": "action",
+        "description": "Trigger updates by modifying project or task data"
+      },
+      {
+        "type": "assertion",
+        "description": "Dashboard reflects new data correctly in real-time or on refresh"
+      }
+    ]
+  },
+  {
+    "id": "TC012",
+    "title": "Project Archiving and Restoration",
+    "description": "Validate that users can archive projects to remove them from active views and restore archived projects when needed.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Select a project and archive it via project settings"
+      },
+      {
+        "type": "assertion",
+        "description": "Project is no longer visible in active projects list but appears in archived list"
+      },
+      {
+        "type": "action",
+        "description": "Restore archived project"
+      },
+      {
+        "type": "assertion",
+        "description": "Project reappears in active projects list and is functional"
+      }
+    ]
+  },
+  {
+    "id": "TC013",
+    "title": "Task Dependencies Management",
+    "description": "Verify task dependency creation, enforcement, and impact on task status updates.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Create two tasks, set one as dependent on the other"
+      },
+      {
+        "type": "assertion",
+        "description": "Dependency relationship is saved and visible"
+      },
+      {
+        "type": "action",
+        "description": "Attempt to mark dependent task as complete before the parent task completes"
+      },
+      {
+        "type": "assertion",
+        "description": "System prevents status update due to dependency constraint"
+      },
+      {
+        "type": "action",
+        "description": "Complete the parent task"
+      },
+      {
+        "type": "assertion",
+        "description": "Dependent task can now be completed"
+      }
+    ]
+  },
+  {
+    "id": "TC014",
+    "title": "User Profile Editing and Validation",
+    "description": "Check that users can edit their profile information with validation on inputs and successful updates.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to profile edit page"
+      },
+      {
+        "type": "action",
+        "description": "Modify profile fields with valid and invalid inputs"
+      },
+      {
+        "type": "assertion",
+        "description": "Validation errors are shown for invalid inputs"
+      },
+      {
+        "type": "action",
+        "description": "Save valid profile changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Profile information is updated successfully"
+      }
+    ]
+  },
+  {
+    "id": "TC015",
+    "title": "API Performance Under Load",
+    "description": "Test that all API calls for critical features respond within 500ms under expected load.",
+    "category": "performance",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Simulate multiple concurrent users performing project/task CRUD and AI operations"
+      },
+      {
+        "type": "assertion",
+        "description": "All API calls return within 500ms"
+      }
+    ]
+  },
+  {
+    "id": "TC016",
+    "title": "System Uptime Verification",
+    "description": "Verify that system uptime meets or exceeds 99.5% during extended monitoring periods.",
+    "category": "performance",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Monitor system availability and responsiveness over 30 days"
+      },
+      {
+        "type": "assertion",
+        "description": "System uptime is >= 99.5% without significant downtime"
+      }
+    ]
+  },
+  {
+    "id": "TC017",
+    "title": "Handling of Incomplete or Invalid Project Creation Inputs",
+    "description": "Ensure proper validation messages are shown and project creation is blocked for invalid or missing inputs.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to create new project page"
+      },
+      {
+        "type": "action",
+        "description": "Attempt to proceed with missing mandatory fields such as project name"
+      },
+      {
+        "type": "assertion",
+        "description": "Validation errors prevent progressing to next step"
+      },
+      {
+        "type": "action",
+        "description": "Enter invalid values for fields like dates or task durations"
+      },
+      {
+        "type": "assertion",
+        "description": "Form shows appropriate error messages"
+      }
+    ]
+  },
+  {
+    "id": "TC018",
+    "title": "Task Status Transition Validations",
+    "description": "Check that task status transitions follow allowed workflows and prevent invalid status changes.",
+    "category": "error handling",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Attempt to set a task status directly from 'To Do' to 'Done' without passing through 'In Progress'"
+      },
+      {
+        "type": "assertion",
+        "description": "System blocks invalid status transition with error message"
+      },
+      {
+        "type": "action",
+        "description": "Perform valid status transitions (To Do -> In Progress -> Done)"
+      },
+      {
+        "type": "assertion",
+        "description": "Status updates are successful and reflected in UI"
+      }
+    ]
+  }
+]

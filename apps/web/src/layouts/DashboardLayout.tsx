@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet, Link, Navigate } from 'react-router-dom';
+import { useSession } from '../lib/auth-client';
 
 import { Sidebar } from '../components/Sidebar';
 
@@ -11,8 +12,21 @@ export const DashboardLayout: React.FC = () => {
 
 
 
+    const { data: session, isPending } = useSession();
     const { data: notifications } = useNotifications();
     const unreadCount = notifications?.filter(n => !n.read).length || 0;
+
+    if (isPending) {
+        return (
+            <div className="flex items-center justify-center h-screen bg-neutral-bg">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-dynamic-cta"></div>
+            </div>
+        );
+    }
+
+    if (!session) {
+        return <Navigate to="/login" replace />;
+    }
 
     return (
         <div className={`relative flex h-screen w-full flex-col overflow-hidden font-display text-text-main antialiased selection:bg-dynamic-cta selection:text-white transition-colors duration-500 ${isFocusMode ? 'bg-fokus-dark' : 'bg-neutral-bg'}`}>

@@ -142,9 +142,9 @@ export const DashboardPage: React.FC = () => {
     };
 
     return (
-        <div className="flex-1 min-h-full py-10 px-20 flex flex-col items-start gap-8 relative overflow-hidden">
+        <div className="flex-1 min-h-full py-6 px-4 md:py-10 md:px-12 flex flex-col items-start gap-6 md:gap-8 relative overflow-x-hidden">
             {/* Background Blur Circle */}
-            <div className="absolute top-0 right-[100px] w-64 h-64 bg-gradient-to-br from-white/40 to-transparent rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute top-0 right-[-50px] md:right-[100px] w-40 h-40 md:w-64 md:h-64 bg-gradient-to-br from-white/40 to-transparent rounded-full blur-3xl pointer-events-none" />
 
             {/* Header Section */}
             <div className="w-full max-w-6xl flex flex-col gap-8 z-10">
@@ -208,12 +208,12 @@ export const DashboardPage: React.FC = () => {
                 </div>
 
                 {/* Cards Row */}
-                <div className="w-full h-[450px] flex justify-center items-start gap-6">
+                <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6 auto-rows-fr">
 
                     {/* Active Projects */}
                     <div
                         onClick={() => navigate('/project')}
-                        className="w-1/3 h-full self-stretch bg-sidebar-blue shadow-soft overflow-hidden rounded-2xl border border-white flex flex-col gap-0 hover:translate-y-[-2px] transition-transform duration-300 cursor-pointer group"
+                        className="w-full min-h-[400px] h-full bg-sidebar-blue shadow-soft overflow-hidden rounded-2xl border border-white flex flex-col gap-0 hover:translate-y-[-2px] transition-transform duration-300 cursor-pointer group"
                     >
                         <div className="w-full py-5 px-6 bg-white/30 border-b border-secondary-accent/10 backdrop-blur-sm flex justify-between items-center group-hover:bg-white/50 transition-colors shrink-0">
                             <h3 className="text-text-dark-blue text-lg font-bold leading-7 font-display">Active Projects</h3>
@@ -274,7 +274,7 @@ export const DashboardPage: React.FC = () => {
                     {/* Upcoming Deadlines */}
                     <div
                         onClick={() => navigate('/calendar')}
-                        className="w-1/3 h-full self-stretch bg-sidebar-blue shadow-soft overflow-hidden rounded-2xl border border-white flex flex-col gap-0 hover:translate-y-[-2px] transition-transform duration-300 cursor-pointer group"
+                        className="w-full min-h-[400px] h-full bg-sidebar-blue shadow-soft overflow-hidden rounded-2xl border border-white flex flex-col gap-0 hover:translate-y-[-2px] transition-transform duration-300 cursor-pointer group"
                     >
                         <div className="w-full py-5 px-6 bg-white/30 border-b border-secondary-accent/10 backdrop-blur-sm flex justify-between items-center group-hover:bg-white/50 transition-colors shrink-0">
                             <div className="flex flex-col">
@@ -329,7 +329,7 @@ export const DashboardPage: React.FC = () => {
                     </div>
 
                     {/* Breathing Timer (Black Card) */}
-                    <div className="w-1/3 h-full self-stretch relative bg-black shadow-soft overflow-hidden rounded-2xl border border-white/50 flex flex-col gap-0 hover:translate-y-[-2px] transition-transform duration-300 group">
+                    <div className="w-full min-h-[400px] h-full relative bg-black shadow-soft overflow-hidden rounded-2xl border border-white/50 flex flex-col gap-0 hover:translate-y-[-2px] transition-transform duration-300 group">
                         {/* Gradient Overlay */}
                         <div className="absolute inset-[1px] bg-gradient-to-br from-white/20 to-transparent pointer-events-none" />
 
@@ -396,7 +396,7 @@ export const DashboardPage: React.FC = () => {
                 </div>
 
                 {/* Quick Actions (Bottom Row) */}
-                <div className="w-full pb-8 flex justify-start items-start gap-4">
+                <div className="w-full pb-8 grid grid-cols-2 md:grid-cols-4 gap-4">
                     {[
                         { icon: 'task', label: 'Add Task', color: '#1E293B', to: '/project' }, // Temp route
                         { icon: 'upload_file', label: 'Upload File', color: '#1E293B', to: '/project/resources/add' },

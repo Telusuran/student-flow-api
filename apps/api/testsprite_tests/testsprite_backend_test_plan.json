@@ -1,0 +1,52 @@
+[
+  {
+    "id": "TC001",
+    "title": "user authentication and profile management",
+    "description": "Test user registration, login, password recovery, and profile updates to ensure secure authentication and proper profile management."
+  },
+  {
+    "id": "TC002",
+    "title": "multi step project creation wizard",
+    "description": "Verify the multi-step project creation process including AI-generated task breakdowns and timeline suggestions, and confirm project appears correctly in dashboard."
+  },
+  {
+    "id": "TC003",
+    "title": "comprehensive task management operations",
+    "description": "Test CRUD operations on tasks including nested subtasks, status updates, dependencies, and task reordering with accurate priority updates."
+  },
+  {
+    "id": "TC004",
+    "title": "ai powered document analysis and task generation",
+    "description": "Validate AI processing of uploaded academic documents to extract key requirements and auto-generate relevant tasks for user review and acceptance."
+  },
+  {
+    "id": "TC005",
+    "title": "calendar and timeline view interactions",
+    "description": "Test calendar view for accurate task display, quick add functionality, task rescheduling, and editing of task details."
+  },
+  {
+    "id": "TC006",
+    "title": "resource management file and link uploads",
+    "description": "Verify file and link uploads functionality, tagging, version tracking, and linking resources to tasks and projects."
+  },
+  {
+    "id": "TC007",
+    "title": "real time collaboration messaging and notifications",
+    "description": "Test real-time messaging within project channels including message sending, thread support, and granular notification settings."
+  },
+  {
+    "id": "TC008",
+    "title": "data insights dashboard accuracy",
+    "description": "Validate dashboard analytics for accurate display of project progress charts, velocity tracking, and individual productivity trends."
+  },
+  {
+    "id": "TC009",
+    "title": "admin api system statistics and user management",
+    "description": "Test administrative API endpoints for retrieving system statistics, managing users, and overseeing projects."
+  },
+  {
+    "id": "TC010",
+    "title": "notifications api user notifications and settings",
+    "description": "Verify user notifications delivery, notification settings updates, and correct handling of notification preferences."
+  }
+]
