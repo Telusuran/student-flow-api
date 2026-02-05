@@ -353,7 +353,7 @@ export const ProjectPage: React.FC = () => {
                                         </div>
                                     )}
                                 </div>
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 flex-wrap">
                                     <div className="flex bg-white dark:bg-neutral-800 rounded-xl border border-gray-200 dark:border-neutral-700 p-1 shadow-sm h-10 items-center">
                                         <button
                                             onClick={() => setPriorityFilter('all')}
@@ -387,15 +387,26 @@ export const ProjectPage: React.FC = () => {
                                     <ViewSwitcher projectId={selectedProjectId || 'all'} currentView="board" />
 
                                     {!isAllProjectsMode && selectedProjectId && (
-                                        <Link
-                                            to={`/project/${selectedProjectId}/resources`}
-                                            className={`flex items-center justify-center size-10 rounded-xl border transition-all ${isFocusMode
-                                                ? 'bg-white/10 border-white/10 text-white hover:bg-white/20'
-                                                : 'bg-white border-secondary-accent/20 text-secondary-accent hover:border-cta/50 hover:text-cta hover:shadow-sm'}`}
-                                            title="Project Resources"
-                                        >
-                                            <span className="material-symbols-outlined text-[20px]">folder_open</span>
-                                        </Link>
+                                        <>
+                                            <Link
+                                                to={`/project/${selectedProjectId}/resources`}
+                                                className={`flex items-center justify-center size-10 rounded-xl border transition-all ${isFocusMode
+                                                    ? 'bg-white/10 border-white/10 text-white hover:bg-white/20'
+                                                    : 'bg-white border-secondary-accent/20 text-secondary-accent hover:border-cta/50 hover:text-cta hover:shadow-sm'}`}
+                                                title="Project Resources"
+                                            >
+                                                <span className="material-symbols-outlined text-[20px]">folder_open</span>
+                                            </Link>
+                                            <Link
+                                                to={`/project/settings?projectId=${selectedProjectId}`}
+                                                className={`flex items-center justify-center size-10 rounded-xl border transition-all ${isFocusMode
+                                                    ? 'bg-white/10 border-white/10 text-white hover:bg-white/20'
+                                                    : 'bg-white border-secondary-accent/20 text-secondary-accent hover:border-cta/50 hover:text-cta hover:shadow-sm'}`}
+                                                title="Project Settings"
+                                            >
+                                                <span className="material-symbols-outlined text-[20px]">settings</span>
+                                            </Link>
+                                        </>
                                     )}
 
                                     {!isAllProjectsMode && (

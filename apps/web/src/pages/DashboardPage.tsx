@@ -160,16 +160,12 @@ export const DashboardPage: React.FC = () => {
 
                     {/* Term Pill */}
                     <div className="flex flex-col justify-start items-end">
-                        <div className="px-3 py-1 bg-sidebar-blue shadow-[0px_1px_2px_rgba(0,0,0,0.05)] rounded-full border border-secondary-accent/20 flex items-center justify-between gap-2">
-                            <div className="pr-2 flex flex-col justify-start items-start">
-                                <div className="py-1 flex flex-col justify-start items-start">
-                                    <div className="w-4 h-5 relative">
-                                        <div className="w-3.5 h-3 absolute left-[0.5px] top-[3.5px] bg-[#E6B325]"></div>
-                                    </div>
-                                </div>
+                        <div className="px-4 py-2 bg-sidebar-blue shadow-[0px_1px_3px_rgba(0,0,0,0.08)] rounded-full border border-secondary-accent/20 flex items-center justify-between gap-3 hover:shadow-md transition-shadow cursor-default">
+                            <div className="flex items-center justify-center text-[#E6B325]">
+                                <span className="material-symbols-outlined text-[20px]">school</span>
                             </div>
-                            <div className="text-text-muted text-sm font-normal leading-5 font-display text-right">
-                                Current Term: Fall 2023
+                            <div className="text-text-muted text-sm font-semibold leading-5 font-display text-right">
+                                <span className="text-text-main mr-1">Current Term:</span> Fall 2023
                             </div>
                         </div>
                     </div>
@@ -299,7 +295,7 @@ export const DashboardPage: React.FC = () => {
                                                     {new Date(task.dueDate!).getDate()}
                                                 </span>
                                             </div>
-                                            <div className="flex flex-col gap-1 w-full overflow-hidden">
+                                            <div className="flex flex-col gap-1 w-full overflow-hidden min-w-0">
                                                 <div className="flex items-center gap-2">
                                                     <div className="overflow-hidden flex flex-col pr-1 w-full">
                                                         <h4 className="text-slate-900 text-base font-bold leading-6 font-display truncate">{task.title}</h4>

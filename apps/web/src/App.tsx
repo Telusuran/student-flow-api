@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { DashboardLayout } from './layouts/DashboardLayout'
 import { DashboardPage } from './pages/DashboardPage'
 import { ProjectPage } from './pages/ProjectPage'
+import { ProjectSettingsPage } from './pages/ProjectSettingsPage'
 
 
 
@@ -46,6 +47,7 @@ function App() {
 
           <Route path="/project/messages" element={<ProjectMessagingPage />} />
           <Route path="/calendar" element={<ProjectCalendarPage />} />
+          <Route path="/project/settings" element={<ProjectSettingsPage />} />
           <Route path="/project/:projectId/resources" element={<ResourceManagementPage />} />
           <Route path="/data-insight" element={<DataInsightPage />} />
           <Route path="/ai/analyze" element={<DocumentAnalyzerPage />} />
