@@ -1,0 +1,451 @@
+[
+  {
+    "id": "TC001",
+    "title": "Login success with valid credentials",
+    "description": "Verify that a user can login successfully with valid credentials and is redirected to the Dashboard.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to login page"
+      },
+      {
+        "type": "action",
+        "description": "Input valid username and password"
+      },
+      {
+        "type": "action",
+        "description": "Click login button"
+      },
+      {
+        "type": "assertion",
+        "description": "Ensure login is successful and the Dashboard page is displayed"
+      }
+    ]
+  },
+  {
+    "id": "TC002",
+    "title": "Login failure with invalid credentials",
+    "description": "Verify that login fails when invalid credentials are provided and user receives an appropriate error message.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to login page"
+      },
+      {
+        "type": "action",
+        "description": "Input invalid username and/or password"
+      },
+      {
+        "type": "action",
+        "description": "Click login button"
+      },
+      {
+        "type": "assertion",
+        "description": "Ensure login fails and relevant error message is displayed"
+      }
+    ]
+  },
+  {
+    "id": "TC003",
+    "title": "Role-based access control enforcement",
+    "description": "Verify that users with different roles (admin, mentor) can access only permitted sections of the CMS.",
+    "category": "security",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login as an administrator"
+      },
+      {
+        "type": "assertion",
+        "description": "Ensure admin can access User Management, Project Management, Resource Management, Profile Management, and Dashboard"
+      },
+      {
+        "type": "action",
+        "description": "Logout and login as a mentor"
+      },
+      {
+        "type": "assertion",
+        "description": "Ensure mentor can access allowed modules and restricted from admin-only pages"
+      }
+    ]
+  },
+  {
+    "id": "TC004",
+    "title": "Dashboard metrics display correctly",
+    "description": "Verify that the Dashboard page loads correctly and shows accurate system metrics and navigation links.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login and navigate to Dashboard page"
+      },
+      {
+        "type": "assertion",
+        "description": "Ensure high-level system metrics (e.g. user count, project count) are displayed and correctly formatted"
+      },
+      {
+        "type": "assertion",
+        "description": "Check the navigation hub elements are present and clickable"
+      }
+    ]
+  },
+  {
+    "id": "TC005",
+    "title": "User Management pagination and listing",
+    "description": "Verify the User Management page displays paginated list of users with correct details and navigation controls.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to User Management page"
+      },
+      {
+        "type": "assertion",
+        "description": "Check users are listed with correct information"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify pagination controls are present and functional"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to next page of users"
+      },
+      {
+        "type": "assertion",
+        "description": "Validate new page of users is displayed"
+      }
+    ]
+  },
+  {
+    "id": "TC006",
+    "title": "User search and filter functionality",
+    "description": "Verify users can be searched and filtered by name, role, or status and results update accordingly.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Go to User Management page"
+      },
+      {
+        "type": "action",
+        "description": "Enter search query for a user"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify search results contain only matching users"
+      },
+      {
+        "type": "action",
+        "description": "Apply filter by role or status"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify users displayed match the filter criteria"
+      }
+    ]
+  },
+  {
+    "id": "TC007",
+    "title": "User create, edit, and delete operations",
+    "description": "Validate that users can be created, edited, and deleted with proper confirmation and interface feedback.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to User Management page"
+      },
+      {
+        "type": "action",
+        "description": "Create a new user with valid details"
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm new user appears in the list"
+      },
+      {
+        "type": "action",
+        "description": "Edit the created user's details"
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm changes are saved and displayed correctly"
+      },
+      {
+        "type": "action",
+        "description": "Delete the created user"
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm user is removed after deletion confirmation"
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "User bulk operations and CSV export",
+    "description": "Verify bulk select actions like bulk delete and that exporting user list to CSV works correctly with expected data.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to User Management"
+      },
+      {
+        "type": "action",
+        "description": "Select multiple users via bulk selection checkboxes"
+      },
+      {
+        "type": "action",
+        "description": "Perform a bulk operation (delete)"
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm bulk delete is completed and users are removed"
+      },
+      {
+        "type": "action",
+        "description": "Click on Export to CSV button"
+      },
+      {
+        "type": "assertion",
+        "description": "Validate that CSV file downloads and contains correct user data"
+      }
+    ]
+  },
+  {
+    "id": "TC009",
+    "title": "Project Management grid and status display",
+    "description": "Verify Project Management shows projects in grid cards with status badges, progress bars, and key details.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to Project Management page"
+      },
+      {
+        "type": "assertion",
+        "description": "Project cards display project name, status badge, and progress bar accurately"
+      }
+    ]
+  },
+  {
+    "id": "TC010",
+    "title": "Project quick status update and persistence",
+    "description": "Verify that project status can be updated quickly from the grid view and changes are saved and reflected immediately.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to Project Management page"
+      },
+      {
+        "type": "action",
+        "description": "Update status of a project using the quick status update control"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify status badge updates accordingly and persists after page refresh"
+      }
+    ]
+  },
+  {
+    "id": "TC011",
+    "title": "Project detail view and edit",
+    "description": "Validate that selecting a project opens the Project Details page and edits can be made and saved correctly.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Click on a project card to open details page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify all project information is displayed accurately"
+      },
+      {
+        "type": "action",
+        "description": "Edit project details and save changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm changes are persisted and reflected on detail and grid pages"
+      }
+    ]
+  },
+  {
+    "id": "TC012",
+    "title": "Project deletion with confirmation",
+    "description": "Verify that deleting a project prompts for confirmation and only deletes upon confirmation.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to Project Management page"
+      },
+      {
+        "type": "action",
+        "description": "Initiate deletion of a project"
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm a confirmation modal/dialog appears"
+      },
+      {
+        "type": "action",
+        "description": "Cancel deletion and verify project still exists"
+      },
+      {
+        "type": "action",
+        "description": "Repeat delete and confirm"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify project is removed from the list after confirmation"
+      }
+    ]
+  },
+  {
+    "id": "TC013",
+    "title": "Resource Management navigation and resource display",
+    "description": "Verify users can navigate project folders via breadcrumb navigation and resources are displayed correctly within selected project context.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to Resource Management page"
+      },
+      {
+        "type": "action",
+        "description": "Select a project from the list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify that the folder/file resources for the selected project are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Check breadcrumb navigation is present and updates as user navigates folders"
+      }
+    ]
+  },
+  {
+    "id": "TC014",
+    "title": "Resource folder creation within a project",
+    "description": "Verify that users can create new folders within the resource management context and new folders appear in the file list.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to a project resource folder"
+      },
+      {
+        "type": "action",
+        "description": "Trigger folder creation and input valid folder name"
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm new folder appears in the current folder listing"
+      }
+    ]
+  },
+  {
+    "id": "TC015",
+    "title": "Profile Management update and persistence",
+    "description": "Verify that users can update their profile details securely, that the changes persist, and reflect immediately in the UI.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login and navigate to Profile Management page"
+      },
+      {
+        "type": "action",
+        "description": "Edit profile fields with valid data"
+      },
+      {
+        "type": "action",
+        "description": "Save profile updates"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify success message/toast is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Confirm updated profile details are shown correctly"
+      },
+      {
+        "type": "action",
+        "description": "Refresh page or logout and login"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify updated profile details persist and are displayed properly"
+      }
+    ]
+  },
+  {
+    "id": "TC016",
+    "title": "UI responsiveness and navigation",
+    "description": "Verify that the CMS interface is responsive across devices and screen sizes, and that navigation elements work correctly.",
+    "category": "ui",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Access CMS on desktop, tablet, and mobile screen sizes"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify layout adjusts correctly for each screen size"
+      },
+      {
+        "type": "assertion",
+        "description": "Ensure all navigation elements (menus, links, buttons) are functional and visually clear"
+      }
+    ]
+  },
+  {
+    "id": "TC017",
+    "title": "Application feedback mechanisms",
+    "description": "Validate that user actions (save, delete, error) trigger appropriate UI feedback such as modals, alerts, and toasts consistently.",
+    "category": "ui",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Perform actions like user creation, edit, and delete"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify feedback modals and toast notifications appear with correct messages"
+      },
+      {
+        "type": "action",
+        "description": "Trigger validation errors by submitting invalid data"
+      },
+      {
+        "type": "assertion",
+        "description": "Check appropriate error alerts are shown"
+      }
+    ]
+  }
+]

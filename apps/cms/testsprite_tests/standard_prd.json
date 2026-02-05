@@ -1,0 +1,96 @@
+{
+  "meta": {
+    "project": "Student Flow CMS",
+    "date": "2026-02-04",
+    "prepared_by": "Software Development Manager"
+  },
+  "product_overview": "Student Flow CMS is an intuitive administrative dashboard designed to streamline management of users, projects, and educational resources within the Student Flow ecosystem. It empowers administrators and mentors to oversee student progress and content delivery effectively.",
+  "core_goals": [
+    "Provide secure and role-based access for administrators and mentors.",
+    "Enable efficient management of users, including searching, filtering, and bulk operations.",
+    "Offer comprehensive project management with status tracking and detailed views.",
+    "Facilitate resource organization and file management within project contexts.",
+    "Allow users to manage their own profile information securely.",
+    "Deliver a responsive, user-friendly interface that supports easy navigation and high data density display."
+  ],
+  "key_features": [
+    "Authentication with secure login and session persistence using Better Auth.",
+    "Dashboard presenting high-level system metrics and navigation hub.",
+    "User Management module with paginated listing, search, filter, CRUD operations, and CSV export.",
+    "Project Management featuring grid card views with status badges, progress bars, and quick status updates.",
+    "Resource Management supporting project-based file organization, breadcrumb navigation, upload, and folder creation.",
+    "Profile Management for self-service profile updates by admins and mentors."
+  ],
+  "user_flow_summary": [
+    "Users authenticate via login and are redirected to the Dashboard upon success.",
+    "From the Dashboard, users navigate to User Management to search, filter, edit, or delete user accounts.",
+    "Users access Project Management to browse projects, update statuses quickly, edit details, or delete projects with confirmation.",
+    "Within Resource Management, users select a project to navigate its files and folders, upload files, and create directories.",
+    "Users manage personal profile details within the Profile Management section for secure updates."
+  ],
+  "validation_criteria": [
+    "Authentication enforces role-based access controls and session management.",
+    "User Management supports seamless search, filter, edit, delete, bulk actions, and data export functionalities.",
+    "Project Management accurately displays status badges, progress bars, and correctly handles status updates and deletions.",
+    "Resource Management correctly associates resources with projects and supports folder/file management operations.",
+    "Profile updates persist securely and reflect immediately in the user interface.",
+    "The application UI adheres to responsive design guidelines with clear navigation and appropriate feedback mechanisms (modals, alerts, toasts)."
+  ],
+  "code_summary": {
+    "tech_stack": [
+      "TypeScript",
+      "React",
+      "Vite",
+      "Tailwind CSS",
+      "React Query",
+      "Better Auth",
+      "React Router"
+    ],
+    "features": [
+      {
+        "name": "Authentication",
+        "description": "User login functionality using Better Auth.",
+        "files": [
+          "apps/cms/src/pages/LoginPage.tsx",
+          "apps/cms/src/lib/auth-client.ts"
+        ]
+      },
+      {
+        "name": "Dashboard",
+        "description": "Main dashboard view showing system overview.",
+        "files": [
+          "apps/cms/src/pages/DashboardPage.tsx"
+        ]
+      },
+      {
+        "name": "User Management",
+        "description": "Admin capability to listing and managing users.",
+        "files": [
+          "apps/cms/src/pages/UsersPage.tsx"
+        ]
+      },
+      {
+        "name": "Project Management",
+        "description": "Listing and viewing project details.",
+        "files": [
+          "apps/cms/src/pages/ProjectsPage.tsx",
+          "apps/cms/src/pages/ProjectDetailsPage.tsx"
+        ]
+      },
+      {
+        "name": "Resource Management",
+        "description": "Managing resources within the system.",
+        "files": [
+          "apps/cms/src/pages/ResourcesPage.tsx"
+        ]
+      },
+      {
+        "name": "Profile Management",
+        "description": "User profile viewing and editing.",
+        "files": [
+          "apps/cms/src/pages/ProfilePage.tsx"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,57 @@
+{
+    "tech_stack": [
+        "TypeScript",
+        "React",
+        "Vite",
+        "Tailwind CSS",
+        "React Query",
+        "Better Auth",
+        "React Router"
+    ],
+    "features": [
+        {
+            "name": "Authentication",
+            "description": "User login functionality using Better Auth.",
+            "files": [
+                "apps/cms/src/pages/LoginPage.tsx",
+                "apps/cms/src/lib/auth-client.ts"
+            ]
+        },
+        {
+            "name": "Dashboard",
+            "description": "Main dashboard view showing system overview.",
+            "files": [
+                "apps/cms/src/pages/DashboardPage.tsx"
+            ]
+        },
+        {
+            "name": "User Management",
+            "description": "Admin capability to listing and managing users.",
+            "files": [
+                "apps/cms/src/pages/UsersPage.tsx"
+            ]
+        },
+        {
+            "name": "Project Management",
+            "description": "Listing and viewing project details.",
+            "files": [
+                "apps/cms/src/pages/ProjectsPage.tsx",
+                "apps/cms/src/pages/ProjectDetailsPage.tsx"
+            ]
+        },
+        {
+            "name": "Resource Management",
+            "description": "Managing resources within the system.",
+            "files": [
+                "apps/cms/src/pages/ResourcesPage.tsx"
+            ]
+        },
+        {
+            "name": "Profile Management",
+            "description": "User profile viewing and editing.",
+            "files": [
+                "apps/cms/src/pages/ProfilePage.tsx"
+            ]
+        }
+    ]
+}
